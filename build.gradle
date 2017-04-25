@@ -1,0 +1,8 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+mainClassName = 'uk.gov.ida.dcsclient.TestApplication'
