@@ -9,6 +9,10 @@ dependencies {
     compile(
         'io.dropwizard:dropwizard-core:1.1.0'
     )
+    testCompile(
+            'junit:junit:4.12',
+            'io.dropwizard:dropwizard-testing:1.1.0'
+    )
 }
 
 run {

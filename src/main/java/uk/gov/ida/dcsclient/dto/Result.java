@@ -6,6 +6,11 @@ public class Result {
 
     private String status;
 
+    //needed for deserialization
+    public Result() {
+
+    }
+
     public Result(String status) {
         this.status = status;
     }
