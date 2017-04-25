@@ -5,4 +5,14 @@ repositories {
     mavenCentral()
 }
 
-mainClassName = 'uk.gov.ida.dcsclient.TestApplication'
+dependencies {
+    compile(
+        'io.dropwizard:dropwizard-core:1.1.0'
+    )
+}
+
+run {
+    args = ["server"]
+}
+
+mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
