@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile(
+        'io.dropwizard:dropwizard-core:1.1.0'
+    )
+    testCompile(
+            'junit:junit:4.12',
+            'io.dropwizard:dropwizard-testing:1.1.0'
+    )
+}
+
+run {
+    args = ["server", "configuration/dcs-client.yml"]
+}
+
+mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'

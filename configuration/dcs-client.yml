@@ -1,0 +1,16 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 53000
+  adminConnectors:
+    - type: http
+      port: 53001
+
+logging:
+  level: INFO
+  loggers:
+    "uk.gov": DEBUG
+  appenders:
+    - type: file
+      currentLogFilename: logs/dcs-client.log
+      archivedLogFilenamePattern: logs/dcs-client.log.%d.gz
