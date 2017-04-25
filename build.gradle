@@ -12,7 +12,7 @@ dependencies {
 }
 
 run {
-    args = ["server"]
+    args = ["server", "configuration/dcs-client.yml"]
 }
 
 mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
