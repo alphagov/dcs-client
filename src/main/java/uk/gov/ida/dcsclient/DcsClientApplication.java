@@ -2,7 +2,7 @@ package uk.gov.ida.dcsclient;
 
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
-import uk.gov.ida.dcsclient.resources.TestResource;
+import uk.gov.ida.dcsclient.resources.EvidenceCheckResource;
 
 public class DcsClientApplication extends Application<DcsClientConfiguration> {
     public static void main(String[] args) throws Exception {
@@ -16,6 +16,6 @@ public class DcsClientApplication extends Application<DcsClientConfiguration> {
 
     @Override
     public void run(DcsClientConfiguration configuration, Environment environment) throws Exception {
-        environment.jersey().register(new TestResource());
+        environment.jersey().register(new EvidenceCheckResource(null, null));
     }
 }
