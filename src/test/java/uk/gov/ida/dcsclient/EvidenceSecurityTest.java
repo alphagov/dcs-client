@@ -1,5 +1,6 @@
 package uk.gov.ida.dcsclient;
 
+import com.nimbusds.jose.JOSEException;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,7 +13,7 @@ public class EvidenceSecurityTest {
     private final DcsSigner signer = mock(DcsSigner.class);
 
     @Test
-    public void shouldSecurePayload() {
+    public void shouldSecurePayload() throws JOSEException {
         EvidenceSecurity evidenceSecurity = new EvidenceSecurity(encrypter, signer);
         when(signer.sign("payload")).thenReturn("sign1");
         when(encrypter.encrypt("sign1")).thenReturn("encrypted");
