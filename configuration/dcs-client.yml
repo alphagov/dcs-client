@@ -1,3 +1,5 @@
+dcsUrl: http://localhost:52110/checks/driving-licence
+
 server:
   applicationConnectors:
     - type: http
@@ -14,3 +16,7 @@ logging:
     - type: file
       currentLogFilename: logs/dcs-client.log
       archivedLogFilenamePattern: logs/dcs-client.log.%d.gz
+
+clientPrivateSigningKey: ${CLIENT_SIGNING_KEY}
+clientSigningCertificate: ${CLIENT_SIGNING_CERT}
+dcsEncryptionCertificate: ${DCS_ENCRYPTION_CERT}

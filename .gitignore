@@ -13,3 +13,4 @@ artefacts/
 data/**
 /.mongo/*
 !/.mongo/.gitkeep
+classes/

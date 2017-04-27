@@ -1,0 +1,15 @@
+{
+  "correlationId": "correlationId",
+  "requestId": "requestId",
+  "timestamp": "2017-04-27T15:46:37.555Z",
+  "clientId": "clientId",
+  "surname": "SMITH",
+  "forenames": "JOHN",
+  "dateOfBirth": "1970-01-01",
+  "issueDate": "2012-01-01",
+  "expiryDate": "2022-01-01",
+  "licenceNumber": "JOHN9701010ABCSD",
+  "issueNumber": "12",
+  "postcode": "WC2B6NH",
+  "issuingAuthority": "DVLA"
+}
