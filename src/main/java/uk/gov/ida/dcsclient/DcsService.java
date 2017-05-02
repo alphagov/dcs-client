@@ -12,15 +12,18 @@ public class DcsService {
 
     private Client httpClient;
     private final String dcsUrl;
+    private final String sslRequestHeader;
 
-    public DcsService(Client httpClient, String dcsUrl){
+    public DcsService(Client httpClient, String dcsUrl, String sslRequestHeader){
         this.httpClient = httpClient;
         this.dcsUrl = dcsUrl;
+        this.sslRequestHeader = sslRequestHeader;
     }
 
     public Result call(String encryptedPayload) {
         Response response = httpClient.target(dcsUrl)
                 .request()
+                .header("X-ssl-client-s-dn", sslRequestHeader)
                 .post(Entity.entity(encryptedPayload, APPLICATION_MEDIA_TYPE_JOSE));
 
         return response.getStatus() == HttpStatus.OK_200

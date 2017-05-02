@@ -4,11 +4,9 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.util.Base64URL;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import sun.security.rsa.RSAKeyPairGenerator;
-import sun.security.rsa.RSAPrivateKeyImpl;
 
 import java.security.KeyPair;
 import java.security.interfaces.RSAPrivateKey;

@@ -5,27 +5,30 @@ import com.google.common.io.Files;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+
+import static com.google.common.base.Charsets.US_ASCII;
 
 public class DcsKeyGenerator {
 
     private static final String algorithm = "RSA";
 
-    public static RSAPublicKey generatePublicKey(File publicCertificate) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, CertificateException {
+    public static X509Certificate generateCertificate(File publicCertificate) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException, CertificateException {
         java.security.cert.CertificateFactory certificateFactory = java.security
                 .cert
                 .CertificateFactory
                 .getInstance("X.509");
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(Files.toByteArray(publicCertificate));
-        X509Certificate certificate = (X509Certificate) certificateFactory.generateCertificate(byteArrayInputStream);
-        return (RSAPublicKey) certificate.getPublicKey();
+
+        String certString = Files.toString(publicCertificate, US_ASCII);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(certString.getBytes(StandardCharsets.UTF_8));
+        return (X509Certificate) certificateFactory.generateCertificate(byteArrayInputStream);
     }
 
     public static RSAPrivateKey generatePrivateKey(File privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {

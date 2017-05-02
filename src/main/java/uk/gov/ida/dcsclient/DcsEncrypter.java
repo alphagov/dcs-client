@@ -3,22 +3,25 @@ package uk.gov.ida.dcsclient;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSAEncrypter;
 import com.nimbusds.jose.util.Base64URL;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 
 import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;
 import static org.apache.commons.codec.digest.DigestUtils.sha1;
 
 public class DcsEncrypter {
-    private RSAPublicKey publicKey;
+    private X509Certificate certificate;
 
-    public DcsEncrypter(RSAPublicKey publicKey) {
-        this.publicKey = publicKey;
+    public DcsEncrypter(X509Certificate certificate) {
+        this.certificate = certificate;
     }
 
-    public String encrypt(String input) throws JOSEException {
-        Base64URL thumbprint = new Base64URL(encodeBase64URLSafeString(sha1(publicKey.getEncoded())));
+    public String encrypt(String input) throws JOSEException, CertificateEncodingException {
+        RSAPublicKey publicKey = (RSAPublicKey) certificate.getPublicKey();
+
+        Base64URL thumbprint = new Base64URL(encodeBase64URLSafeString(sha1(certificate.getEncoded())));
 
         JWEHeader header = new JWEHeader.Builder(JWEAlgorithm.RSA_OAEP, EncryptionMethod.A128CBC_HS256)
                 .x509CertThumbprint(thumbprint)

@@ -20,3 +20,5 @@ logging:
 clientPrivateSigningKey: ${CLIENT_SIGNING_KEY}
 clientSigningCertificate: ${CLIENT_SIGNING_CERT}
 dcsEncryptionCertificate: ${DCS_ENCRYPTION_CERT}
+
+sslRequestHeader: /CN=ssl two

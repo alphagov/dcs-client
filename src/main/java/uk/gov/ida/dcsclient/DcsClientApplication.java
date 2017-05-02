@@ -10,6 +10,7 @@ import org.glassfish.jersey.client.JerseyClientBuilder;
 import uk.gov.ida.dcsclient.resources.EvidenceCheckResource;
 
 import javax.ws.rs.client.Client;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -38,8 +39,9 @@ public class DcsClientApplication extends Application<DcsClientConfiguration> {
 
     @Override
     public void run(DcsClientConfiguration configuration, Environment environment) throws Exception {
-        RSAPublicKey dcsPublicEncryptionCert = DcsKeyGenerator.generatePublicKey(configuration.getDcsEncryptionCertificate());
-        RSAPublicKey clientPublicSigningCert = DcsKeyGenerator.generatePublicKey(configuration.getClientSigningCertificate());
+        X509Certificate dcsPublicEncryptionCert = DcsKeyGenerator.generateCertificate(configuration.getDcsEncryptionCertificate());
+        X509Certificate clientPublicSigningCert = DcsKeyGenerator.generateCertificate(configuration.getClientSigningCertificate());
+
         RSAPrivateKey clientPrivateSigningKey = DcsKeyGenerator.generatePrivateKey(configuration.getClientPrivateSigningKey());
         Base64URL clientThumbprint = new Base64URL(encodeBase64URLSafeString(sha1(clientPublicSigningCert.getEncoded())));
 
@@ -47,7 +49,7 @@ public class DcsClientApplication extends Application<DcsClientConfiguration> {
         DcsSigner signer = new DcsSigner(clientPrivateSigningKey, clientThumbprint);
         EvidenceSecurity evidenceSecurity = new EvidenceSecurity(encrypter, signer);
         Client client = JerseyClientBuilder.createClient();
-        DcsService dcsService = new DcsService(client, configuration.getDcsUrl());
+        DcsService dcsService = new DcsService(client, configuration.getDcsUrl(), configuration.getSslRequestHeader());
         environment.jersey().register(new EvidenceCheckResource(evidenceSecurity, dcsService));
     }
 }

@@ -9,6 +9,7 @@ public class DcsClientConfiguration extends Configuration {
     private File clientPrivateSigningKey;
     private File dcsEncryptionCertificate;
     private String dcsUrl;
+    private String sslRequestHeader;
 
     public File getClientSigningCertificate() {
         return clientSigningCertificate;
@@ -25,4 +26,6 @@ public class DcsClientConfiguration extends Configuration {
     public String getDcsUrl() {
         return dcsUrl;
     }
+
+    public String getSslRequestHeader() { return sslRequestHeader; }
 }
