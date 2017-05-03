@@ -12,7 +12,6 @@ import uk.gov.ida.dcsclient.resources.EvidenceCheckResource;
 import javax.ws.rs.client.Client;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 
 import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;
 import static org.apache.commons.codec.digest.DigestUtils.sha1;
@@ -41,15 +40,21 @@ public class DcsClientApplication extends Application<DcsClientConfiguration> {
     public void run(DcsClientConfiguration configuration, Environment environment) throws Exception {
         X509Certificate dcsPublicEncryptionCert = DcsKeyGenerator.generateCertificate(configuration.getDcsEncryptionCertificate());
         X509Certificate clientPublicSigningCert = DcsKeyGenerator.generateCertificate(configuration.getClientSigningCertificate());
-
         RSAPrivateKey clientPrivateSigningKey = DcsKeyGenerator.generatePrivateKey(configuration.getClientPrivateSigningKey());
+        RSAPrivateKey clientPrivateEncryptionKey = DcsKeyGenerator.generatePrivateKey(configuration.getClientPrivateEncryptionKey());
+
         Base64URL clientThumbprint = new Base64URL(encodeBase64URLSafeString(sha1(clientPublicSigningCert.getEncoded())));
 
         DcsEncrypter encrypter = new DcsEncrypter(dcsPublicEncryptionCert);
         DcsSigner signer = new DcsSigner(clientPrivateSigningKey, clientThumbprint);
         EvidenceSecurity evidenceSecurity = new EvidenceSecurity(encrypter, signer);
+
         Client client = JerseyClientBuilder.createClient();
         DcsService dcsService = new DcsService(client, configuration.getDcsUrl(), configuration.getSslRequestHeader());
-        environment.jersey().register(new EvidenceCheckResource(evidenceSecurity, dcsService));
+
+        DcsDecrypter dcsDecrypter = new DcsDecrypter(clientPrivateEncryptionKey);
+        DcsSecurePayloadExtractor securePayloadExtractor = new DcsSecurePayloadExtractor(dcsDecrypter);
+
+        environment.jersey().register(new EvidenceCheckResource(evidenceSecurity, dcsService, securePayloadExtractor));
     }
 }

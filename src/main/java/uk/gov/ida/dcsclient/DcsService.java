@@ -1,8 +1,5 @@
 package uk.gov.ida.dcsclient;
 
-import org.eclipse.jetty.http.HttpStatus;
-import uk.gov.ida.dcsclient.dto.Result;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
@@ -20,14 +17,10 @@ public class DcsService {
         this.sslRequestHeader = sslRequestHeader;
     }
 
-    public Result call(String encryptedPayload) {
-        Response response = httpClient.target(dcsUrl)
+    public Response call(String encryptedPayload) {
+        return httpClient.target(dcsUrl)
                 .request()
                 .header("X-ssl-client-s-dn", sslRequestHeader)
                 .post(Entity.entity(encryptedPayload, APPLICATION_MEDIA_TYPE_JOSE));
-
-        return response.getStatus() == HttpStatus.OK_200
-                ? new Result("pass")
-                : new Result("fail");
     }
 }
