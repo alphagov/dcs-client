@@ -1,4 +1,4 @@
-package uk.gov.ida.dcsclient;
+package uk.gov.ida.dcsclient.services;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;

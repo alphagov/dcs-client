@@ -1,4 +1,4 @@
-package uk.gov.ida.dcsclient;
+package uk.gov.ida.dcsclient.security;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEObject;

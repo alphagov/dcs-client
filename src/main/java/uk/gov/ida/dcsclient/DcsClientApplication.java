@@ -7,7 +7,10 @@ import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.jersey.client.JerseyClientBuilder;
+import uk.gov.ida.dcsclient.config.DcsClientConfiguration;
 import uk.gov.ida.dcsclient.resources.EvidenceCheckResource;
+import uk.gov.ida.dcsclient.security.*;
+import uk.gov.ida.dcsclient.services.DcsService;
 
 import javax.ws.rs.client.Client;
 import java.security.cert.X509Certificate;

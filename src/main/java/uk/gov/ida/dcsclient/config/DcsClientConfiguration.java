@@ -1,4 +1,4 @@
-package uk.gov.ida.dcsclient;
+package uk.gov.ida.dcsclient.config;
 
 import io.dropwizard.Configuration;
 

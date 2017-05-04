@@ -1,4 +1,4 @@
-package uk.gov.ida.dcsclient;
+package uk.gov.ida.dcsclient.services;
 
 import org.junit.Test;
 

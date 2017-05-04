@@ -1,8 +1,8 @@
 package uk.gov.ida.dcsclient.resources;
 
-import uk.gov.ida.dcsclient.DcsSecurePayloadExtractor;
-import uk.gov.ida.dcsclient.DcsService;
-import uk.gov.ida.dcsclient.EvidenceSecurity;
+import uk.gov.ida.dcsclient.security.DcsSecurePayloadExtractor;
+import uk.gov.ida.dcsclient.services.DcsService;
+import uk.gov.ida.dcsclient.security.EvidenceSecurity;
 import uk.gov.ida.dcsclient.dto.Result;
 
 import javax.ws.rs.POST;
