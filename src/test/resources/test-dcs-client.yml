@@ -1,0 +1,26 @@
+dcsUrl: override to use the stub
+
+server:
+  applicationConnectors:
+    - type: http
+      port: 53000
+  adminConnectors:
+    - type: http
+      port: 53001
+
+logging:
+  level: INFO
+  loggers:
+    "uk.gov": DEBUG
+  appenders:
+    - type: file
+      currentLogFilename: logs/test-dcs-client.log
+      archivedLogFilenamePattern: logs/test-dcs-client.log.%d.gz
+
+clientPrivateSigningKey: src/test/resources/private_key.pk8
+clientSigningCertificate: src/test/resources/certificate.cert
+clientPrivateEncryptionKey: src/test/resources/private_key.pk8
+
+dcsEncryptionCertificate: src/test/resources/certificate.cert
+
+sslRequestHeader: /CN=ssl two
