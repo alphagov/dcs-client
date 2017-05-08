@@ -3,7 +3,6 @@ package uk.gov.ida.dcsclient.stubs;
 import com.nimbusds.jose.util.Base64URL;
 import uk.gov.ida.dcsclient.security.*;
 
-import javax.crypto.KeyGenerator;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;

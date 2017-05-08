@@ -1,5 +1,6 @@
 package uk.gov.ida.dcsclient.services;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
@@ -17,10 +18,14 @@ public class DcsService {
         this.sslRequestHeader = sslRequestHeader;
     }
 
-    public Response call(String encryptedPayload) {
-        return httpClient.target(dcsUrl)
-                .request()
-                .header("X-ssl-client-s-dn", sslRequestHeader)
-                .post(Entity.entity(encryptedPayload, APPLICATION_MEDIA_TYPE_JOSE));
+    public Response call(String encryptedPayload) throws DcsConnectionException {
+        try {
+            return httpClient.target(dcsUrl)
+                    .request()
+                    .header("X-ssl-client-s-dn", sslRequestHeader)
+                    .post(Entity.entity(encryptedPayload, APPLICATION_MEDIA_TYPE_JOSE));
+        } catch (ProcessingException e) {
+            throw new DcsConnectionException(e);
+        }
     }
 }

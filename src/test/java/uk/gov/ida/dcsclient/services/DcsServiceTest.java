@@ -2,6 +2,7 @@ package uk.gov.ida.dcsclient.services;
 
 import org.junit.Test;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -9,20 +10,20 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class DcsServiceTest {
+
+    private final String payload = "some encrypted jose";
+    private final String dcsUrl = "http://dcs";
+    private final String sslRequestHeader = "/CN=ssl two";
+
     @Test
     public void shouldPostJoseToDCS() throws Exception {
         WebTarget target = mock(WebTarget.class);
         Client client = mock(Client.class);
         Response expectedResponse = mock(Response.class);
         Invocation.Builder requestBuilder = mock(Invocation.Builder.class);
-
-        String payload = "some encrypted jose";
-        String dcsUrl = "http://dcs";
-        String sslRequestHeader = "/CN=ssl two";
 
         when(client.target(dcsUrl)).thenReturn(target);
         when(target.request()).thenReturn(requestBuilder);
@@ -34,5 +35,17 @@ public class DcsServiceTest {
 
         assertThat(actualResponse).isEqualTo(expectedResponse);
         verify(requestBuilder).header("X-ssl-client-s-dn", sslRequestHeader);
+    }
+
+    @Test(expected = DcsConnectionException.class)
+    public void shouldThrowExceptionIfConnectionToDcsFailed() throws DcsConnectionException {
+        WebTarget target = mock(WebTarget.class);
+        Client client = mock(Client.class);
+
+        when(client.target(dcsUrl)).thenReturn(target);
+        when(target.request()).thenThrow(new ProcessingException("something died"));
+
+        DcsService dcsService = new DcsService(client, dcsUrl, sslRequestHeader);
+        dcsService.call(payload);
     }
 }
