@@ -15,14 +15,20 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 
 public abstract class DcsClientApplicationTestBase {
 
-    public static final String CERTIFICATE_PATH = "src/test/resources/certificate.cert";
-    public static final String PRIVATE_KEY_PATH = "src/test/resources/private_key.pk8";
-    public static final long ONE_YEAR = (long) 365 * 24 * 60 * 60;
+    private static final String CERTIFICATE_PATH = "src/test/resources/certificate.cert";
+    private static final String PRIVATE_KEY_PATH = "src/test/resources/private_key.pk8";
+
+    private static final long ONE_YEAR = (long) 365 * 24 * 60 * 60;
+    private static final String KEY_TYPE = "RSA";
+    private static final String SIGNATURE_ALGORITHM = "SHA256WithRSA";
+    private static final String DISTINGUISHED_NAME = "CN=My Application,O=My Organisation,L=My City,C=DE";
+
     private static final StubDcs stubDcsResource = new StubDcs();
 
     @ClassRule
@@ -30,25 +36,33 @@ public abstract class DcsClientApplicationTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        CertAndKeyGen certGen = new CertAndKeyGen("RSA", "SHA256WithRSA", null);
+        CertAndKeyGen certGen = new CertAndKeyGen(KEY_TYPE, SIGNATURE_ALGORITHM);
         certGen.generate(2048);
-        X509Certificate certificate = certGen.getSelfCertificate(new X500Name("CN=My Application,O=My Organisation,L=My City,C=DE"), ONE_YEAR);
+
+        X509Certificate certificate = certGen.getSelfCertificate(new X500Name(DISTINGUISHED_NAME), ONE_YEAR);
         RSAPrivateKey privateKey = (RSAPrivateKey) certGen.getPrivateKey();
 
-        FileOutputStream certificateWriter = new FileOutputStream(CERTIFICATE_PATH);
-        BASE64Encoder encoder = new BASE64Encoder();
-        certificateWriter.write(X509Factory.BEGIN_CERT.getBytes());
-        certificateWriter.write('\n');
-        encoder.encodeBuffer(certificate.getEncoded(), certificateWriter);
-        certificateWriter.write(X509Factory.END_CERT.getBytes());
-        certificateWriter.close();
+        writeCertificateToFile(certificate);
+        writePrivateKeyToFile(privateKey);
 
+        stubDcsResource.setUpKeys(CERTIFICATE_PATH, PRIVATE_KEY_PATH);
+    }
+
+    private static void writePrivateKeyToFile(RSAPrivateKey privateKey) throws IOException {
         byte[] privateKeyBytes = privateKey.getEncoded();
         FileOutputStream privateKeyOut = new FileOutputStream(PRIVATE_KEY_PATH);
         privateKeyOut.write(privateKeyBytes);
         privateKeyOut.close();
+    }
 
-        stubDcsResource.setUpKeys(CERTIFICATE_PATH, PRIVATE_KEY_PATH);
+    private static void writeCertificateToFile(X509Certificate certificate) throws IOException, CertificateEncodingException {
+        FileOutputStream certificateWriter = new FileOutputStream(CERTIFICATE_PATH);
+        BASE64Encoder encoder = new BASE64Encoder();
+        certificateWriter.write(X509Factory.BEGIN_CERT.getBytes());
+        certificateWriter.write(System.lineSeparator().getBytes());
+        encoder.encodeBuffer(certificate.getEncoded(), certificateWriter);
+        certificateWriter.write(X509Factory.END_CERT.getBytes());
+        certificateWriter.close();
     }
 
     @AfterClass

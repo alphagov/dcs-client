@@ -28,8 +28,7 @@ public class StubDcs {
     @POST
     public String licenceCheck(String evidencePayload) throws Exception {
         String payloadFor = securePayloadExtractor.getPayloadFor(evidencePayload);
-        String securedResponse = evidenceSecurity.secure("you sent me: " + payloadFor);
-        return securedResponse;
+        return evidenceSecurity.secure("you sent me: " + payloadFor);
     }
 
     public void setUpKeys(String certificatePath, String privateKeyPath) throws InvalidKeySpecException, CertificateException, NoSuchAlgorithmException, IOException {
