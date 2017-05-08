@@ -41,23 +41,40 @@ public class DcsClientApplication extends Application<DcsClientConfiguration> {
 
     @Override
     public void run(DcsClientConfiguration configuration, Environment environment) throws Exception {
-        X509Certificate dcsPublicEncryptionCert = DcsKeyGenerator.generateCertificate(configuration.getDcsEncryptionCertificate());
-        X509Certificate clientPublicSigningCert = DcsKeyGenerator.generateCertificate(configuration.getClientSigningCertificate());
-        RSAPrivateKey clientPrivateSigningKey = DcsKeyGenerator.generatePrivateKey(configuration.getClientPrivateSigningKey());
-        RSAPrivateKey clientPrivateEncryptionKey = DcsKeyGenerator.generatePrivateKey(configuration.getClientPrivateEncryptionKey());
-
-        Base64URL clientThumbprint = new Base64URL(encodeBase64URLSafeString(sha1(clientPublicSigningCert.getEncoded())));
-
-        DcsEncrypter encrypter = new DcsEncrypter(dcsPublicEncryptionCert);
-        DcsSigner signer = new DcsSigner(clientPrivateSigningKey, clientThumbprint);
-        EvidenceSecurity evidenceSecurity = new EvidenceSecurity(encrypter, signer);
+        EvidenceSecurity evidenceSecurity = createEvidenceSecurity(configuration);
+        DcsSecurePayloadExtractor securePayloadExtractor = createSecurePayloadExtractor(configuration);
 
         Client client = JerseyClientBuilder.createClient();
         DcsService dcsService = new DcsService(client, configuration.getDcsUrl(), configuration.getSslRequestHeader());
 
-        DcsDecrypter dcsDecrypter = new DcsDecrypter(clientPrivateEncryptionKey);
-        DcsSecurePayloadExtractor securePayloadExtractor = new DcsSecurePayloadExtractor(dcsDecrypter);
-
         environment.jersey().register(new EvidenceCheckResource(evidenceSecurity, dcsService, securePayloadExtractor));
+    }
+
+    private DcsSecurePayloadExtractor createSecurePayloadExtractor(DcsClientConfiguration configuration) throws Exception {
+        DcsDecrypter dcsDecrypter = createDecrypter(configuration);
+        return new DcsSecurePayloadExtractor(dcsDecrypter);
+    }
+
+    private EvidenceSecurity createEvidenceSecurity(DcsClientConfiguration configuration) throws Exception {
+        DcsEncrypter encrypter = createEncrypter(configuration);
+        DcsSigner signer = createSigner(configuration);
+        return new EvidenceSecurity(encrypter, signer);
+    }
+
+    private DcsSigner createSigner(DcsClientConfiguration configuration) throws Exception {
+        X509Certificate clientPublicSigningCert = DcsKeyGenerator.generateCertificate(configuration.getClientSigningCertificate());
+        RSAPrivateKey clientPrivateSigningKey = DcsKeyGenerator.generatePrivateKey(configuration.getClientPrivateSigningKey());
+        Base64URL clientThumbprint = new Base64URL(encodeBase64URLSafeString(sha1(clientPublicSigningCert.getEncoded())));
+        return new DcsSigner(clientPrivateSigningKey, clientThumbprint);
+    }
+
+    private DcsEncrypter createEncrypter(DcsClientConfiguration configuration) throws Exception {
+        X509Certificate dcsPublicEncryptionCert = DcsKeyGenerator.generateCertificate(configuration.getDcsEncryptionCertificate());
+        return new DcsEncrypter(dcsPublicEncryptionCert);
+    }
+
+    private DcsDecrypter createDecrypter(DcsClientConfiguration configuration) throws Exception {
+        RSAPrivateKey clientPrivateEncryptionKey = DcsKeyGenerator.generatePrivateKey(configuration.getClientPrivateEncryptionKey());
+        return new DcsDecrypter(clientPrivateEncryptionKey);
     }
 }

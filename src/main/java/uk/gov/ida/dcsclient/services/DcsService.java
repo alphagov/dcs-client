@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 public class DcsService {
     public static final String APPLICATION_MEDIA_TYPE_JOSE = "application/jose";
 
-    private Client httpClient;
+    private final Client httpClient;
     private final String dcsUrl;
     private final String sslRequestHeader;
 

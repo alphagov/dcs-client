@@ -42,18 +42,26 @@ public class EvidenceCheckResource {
             String securedPayload = evidenceSecurity.secure(evidencePayload);
             Response response = dcsService.call(securedPayload);
 
-            String responseBody = response.readEntity(String.class);
-            String body = responseBody.isEmpty()
-                    ? responseBody
-                    : securePayloadExtractor.getPayloadFor(responseBody);
+            String body = getBodyFrom(response);
+            String error = getErrorFrom(response);
 
-            Object errorHeader = response.getHeaders().getFirst(DCS_ERROR_HEADER);
-            String error = errorHeader == null ? "" : errorHeader.toString();
-
-            return Response.ok(new Result(response.getStatus(), body, error)).build();
+            Result result = new Result(response.getStatus(), body, error);
+            return Response.status(response.getStatus()).entity(result).build();
         } catch (DcsConnectionException e) {
             LOG.warn(ExceptionUtils.getStackTrace(e));
             return Response.status(HttpStatus.SERVICE_UNAVAILABLE_503).entity(e.getMessage()).build();
         }
+    }
+
+    private String getErrorFrom(Response response) {
+        Object errorHeader = response.getHeaders().getFirst(DCS_ERROR_HEADER);
+        return errorHeader == null ? "" : errorHeader.toString();
+    }
+
+    private String getBodyFrom(Response response) throws ParseException, JOSEException {
+        String responseBody = response.readEntity(String.class);
+        return responseBody.isEmpty()
+                ? responseBody
+                : securePayloadExtractor.getPayloadFor(responseBody);
     }
 }

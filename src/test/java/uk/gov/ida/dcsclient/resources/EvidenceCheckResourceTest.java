@@ -52,10 +52,13 @@ public class EvidenceCheckResourceTest {
 
         Result expectedResult = new Result(200, expectedDecryptedBody, "");
 
-        Result result = resources.target("/check-evidence")
+        Response response = resources.target("/check-evidence")
                 .request()
-                .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE), Result.class);
+                .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE));
 
+        Result result = response.readEntity(Result.class);
+
+        assertThat(response.getStatus()).isEqualTo(200);
         assertThat(result).isEqualToComparingFieldByField(expectedResult);
     }
 
@@ -70,10 +73,13 @@ public class EvidenceCheckResourceTest {
 
         Result expectedResult = new Result(503, "", "");
 
-        Result result = resources.target("/check-evidence")
+        Response response = resources.target("/check-evidence")
                 .request()
-                .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE), Result.class);
+                .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE));
 
+        Result result = response.readEntity(Result.class);
+
+        assertThat(response.getStatus()).isEqualTo(503);
         assertThat(result).isEqualToComparingFieldByField(expectedResult);
         verify(securePayloadExtractor, never()).getPayloadFor(anyString());
     }
@@ -93,10 +99,13 @@ public class EvidenceCheckResourceTest {
 
         Result expectedResult = new Result(500, "", dcsError);
 
-        Result result = resources.target("/check-evidence")
+        Response response = resources.target("/check-evidence")
                 .request()
-                .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE), Result.class);
+                .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE));
 
+        Result result = response.readEntity(Result.class);
+
+        assertThat(response.getStatus()).isEqualTo(500);
         assertThat(result).isEqualToComparingFieldByField(expectedResult);
         verify(securePayloadExtractor, never()).getPayloadFor(anyString());
     }
