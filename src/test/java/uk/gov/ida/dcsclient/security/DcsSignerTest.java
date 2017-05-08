@@ -6,9 +6,8 @@ import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jose.util.Base64URL;
 import org.junit.Before;
 import org.junit.Test;
-import sun.security.rsa.RSAKeyPairGenerator;
+import uk.gov.ida.dcsclient.testutils.CertAndKeys;
 
-import java.security.KeyPair;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
@@ -20,34 +19,32 @@ public class DcsSignerTest {
     private RSAPublicKey publicKey;
     private RSAPrivateKey privateKey;
     private Base64URL thumbprint = new Base64URL("test thumbprint");
+    private String payload = "some payload";
 
     @Before
-    public void setUp() {
-        RSAKeyPairGenerator keyGen = new RSAKeyPairGenerator();
-        KeyPair keyPair = keyGen.generateKeyPair();
-        privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        publicKey = (RSAPublicKey) keyPair.getPublic();
+    public void setUp() throws Exception {
+        CertAndKeys certAndKeys = CertAndKeys.generate();
+        privateKey = certAndKeys.privateKey;
+        publicKey = certAndKeys.publicKey;
     }
 
     @Test
     public void shouldSignInput() throws Exception {
         DcsSigner dcsSigner = new DcsSigner(privateKey, thumbprint);
 
-        String signed = dcsSigner.sign("some payload");
+        String signed = dcsSigner.sign(payload);
         JWSObject parsed = JWSObject.parse(signed);
         boolean verified = parsed.verify(new RSASSAVerifier(publicKey));
 
         assertThat(verified).isTrue();
         assertThat(parsed.getHeader().getX509CertThumbprint()).isEqualTo(thumbprint);
-        assertThat(parsed.getPayload().toString()).isEqualTo("some payload");
+        assertThat(parsed.getPayload().toString()).isEqualTo(payload);
     }
 
     @Test(expected = JOSEException.class)
     public void shouldThrowExceptionWhenUnableToSign() throws Exception {
         RSAPrivateKey mockPrivateKey = mock(RSAPrivateKey.class);
-
         DcsSigner dcsSigner = new DcsSigner(mockPrivateKey, null);
-
-        dcsSigner.sign("some payload");
+        dcsSigner.sign(payload);
     }
 }

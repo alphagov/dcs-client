@@ -16,12 +16,17 @@ public class EvidenceSecurityTest {
 
     @Test
     public void shouldSecurePayload() throws JOSEException, CertificateEncodingException {
-        EvidenceSecurity evidenceSecurity = new EvidenceSecurity(encrypter, signer);
-        when(signer.sign("payload")).thenReturn("sign1");
-        when(encrypter.encrypt("sign1")).thenReturn("encrypted");
-        when(signer.sign("encrypted")).thenReturn("securedPayload");
+        String plaintext = "payload";
+        String signedText = "sign1";
+        String encryptedText = "encrypted";
+        String securedText = "securedPayload";
 
-        String payload = evidenceSecurity.secure("payload");
-        assertThat(payload).isEqualTo("securedPayload");
+        when(signer.sign(plaintext)).thenReturn(signedText);
+        when(encrypter.encrypt(signedText)).thenReturn(encryptedText);
+        when(signer.sign(encryptedText)).thenReturn(securedText);
+
+        String payload = new EvidenceSecurity(encrypter, signer).secure(plaintext);
+
+        assertThat(payload).isEqualTo(securedText);
     }
 }

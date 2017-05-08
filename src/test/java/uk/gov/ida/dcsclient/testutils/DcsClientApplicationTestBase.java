@@ -6,8 +6,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import sun.misc.BASE64Encoder;
 import sun.security.provider.X509Factory;
-import sun.security.tools.keytool.CertAndKeyGen;
-import sun.security.x509.X500Name;
 import uk.gov.ida.dcsclient.stubs.StubDcs;
 
 import java.io.FileOutputStream;
@@ -24,11 +22,6 @@ public abstract class DcsClientApplicationTestBase {
     private static final String CERTIFICATE_PATH = "src/test/resources/certificate.cert";
     private static final String PRIVATE_KEY_PATH = "src/test/resources/private_key.pk8";
 
-    private static final long ONE_YEAR = (long) 365 * 24 * 60 * 60;
-    private static final String KEY_TYPE = "RSA";
-    private static final String SIGNATURE_ALGORITHM = "SHA256WithRSA";
-    private static final String DISTINGUISHED_NAME = "CN=My Application,O=My Organisation,L=My City,C=DE";
-
     private static final StubDcs stubDcsResource = new StubDcs();
 
     @ClassRule
@@ -36,15 +29,9 @@ public abstract class DcsClientApplicationTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        CertAndKeyGen certGen = new CertAndKeyGen(KEY_TYPE, SIGNATURE_ALGORITHM);
-        certGen.generate(2048);
-
-        X509Certificate certificate = certGen.getSelfCertificate(new X500Name(DISTINGUISHED_NAME), ONE_YEAR);
-        RSAPrivateKey privateKey = (RSAPrivateKey) certGen.getPrivateKey();
-
-        writeCertificateToFile(certificate);
-        writePrivateKeyToFile(privateKey);
-
+        CertAndKeys certAndKeys = CertAndKeys.generate();
+        writeCertificateToFile(certAndKeys.certificate);
+        writePrivateKeyToFile(certAndKeys.privateKey);
         stubDcsResource.setUpKeys(CERTIFICATE_PATH, PRIVATE_KEY_PATH);
     }
 

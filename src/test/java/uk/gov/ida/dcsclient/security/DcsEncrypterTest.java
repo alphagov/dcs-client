@@ -5,8 +5,7 @@ import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.crypto.RSADecrypter;
 import org.junit.Before;
 import org.junit.Test;
-import sun.security.tools.keytool.CertAndKeyGen;
-import sun.security.x509.X500Name;
+import uk.gov.ida.dcsclient.testutils.CertAndKeys;
 
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
@@ -21,24 +20,19 @@ public class DcsEncrypterTest {
 
     private RSAPrivateKey privateKey;
     private X509Certificate certification;
-    public static final long ONE_YEAR = (long) 365 * 24 * 60 * 60;
+    private final String plainText = "so plain";
 
     @Before
     public void setUp() throws Exception {
-        CertAndKeyGen certGen = new CertAndKeyGen("RSA", "SHA256WithRSA", null);
-        certGen.generate(2048);
-
-        X509Certificate cert = certGen.getSelfCertificate(new X500Name("CN=My Application,O=My Organisation,L=My City,C=DE"), ONE_YEAR);
-
-        privateKey = (RSAPrivateKey) certGen.getPrivateKey();
-        certification = cert;
+        CertAndKeys certAndKeys = CertAndKeys.generate();
+        privateKey = certAndKeys.privateKey;
+        certification = certAndKeys.certificate;
     }
 
     @Test
     public void shouldEncryptInput() throws Exception {
         DcsEncrypter dcsEncrypter = new DcsEncrypter(certification);
 
-        String plainText = "so plain";
         String encrypted = dcsEncrypter.encrypt(plainText);
 
         JWEObject jweObject = JWEObject.parse(encrypted);
@@ -58,6 +52,6 @@ public class DcsEncrypterTest {
 
         DcsEncrypter encrypter = new DcsEncrypter(mockPublicKey);
 
-        encrypter.encrypt("some payload");
+        encrypter.encrypt(plainText);
     }
 }

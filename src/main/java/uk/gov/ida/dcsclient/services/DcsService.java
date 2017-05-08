@@ -7,6 +7,7 @@ import javax.ws.rs.core.Response;
 
 public class DcsService {
     public static final String APPLICATION_MEDIA_TYPE_JOSE = "application/jose";
+    public static final String COMMON_NAME_HEADER = "X-ssl-client-s-dn";
 
     private final Client httpClient;
     private final String dcsUrl;
@@ -22,7 +23,7 @@ public class DcsService {
         try {
             return httpClient.target(dcsUrl)
                     .request()
-                    .header("X-ssl-client-s-dn", sslRequestHeader)
+                    .header(COMMON_NAME_HEADER, sslRequestHeader)
                     .post(Entity.entity(encryptedPayload, APPLICATION_MEDIA_TYPE_JOSE));
         } catch (ProcessingException e) {
             throw new DcsConnectionException(e);

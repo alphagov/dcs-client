@@ -2,11 +2,10 @@ package uk.gov.ida.dcsclient.security;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSASigner;
+import org.junit.Before;
 import org.junit.Test;
-import sun.security.rsa.RSAKeyPairGenerator;
+import uk.gov.ida.dcsclient.testutils.CertAndKeys;
 
-import java.security.KeyPair;
-import java.security.interfaces.RSAPrivateKey;
 import java.text.ParseException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,31 +14,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DcsSecurePayloadExtractorTest {
+
+    private final String encryptedString = "Protego";
+    private final String plaintext = "Alohamora";
+    private RSASSASigner signer;
+
+    @Before
+    public void setUp() throws Exception {
+        CertAndKeys certAndKeys = CertAndKeys.generate();
+        signer = new RSASSASigner(certAndKeys.privateKey);
+    }
+
     @Test
-    public void shouldSignInput() throws Exception {
-        KeyPair keyPair = new RSAKeyPairGenerator().generateKeyPair();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-
-        String plaintext = "Wingardium Leviosa";
-        String encrypted = "encrypted";
-
-        RSASSASigner signer = new RSASSASigner(privateKey);
-
-        JWSObject encryptedPayloadJose = new JWSObject(
-                new JWSHeader.Builder(JWSAlgorithm.RS256).build(),
-                new Payload(encrypted)
-        );
-        JWSObject plaintextPayloadJose = new JWSObject(
-                new JWSHeader.Builder(JWSAlgorithm.RS256).build(),
-                new Payload(plaintext)
-        );
-        encryptedPayloadJose.sign(signer);
-        plaintextPayloadJose.sign(signer);
+    public void shouldExtractPlaintextPayloadFromSecuredResponse() throws Exception {
+        JWSObject encryptedPayloadJose = sign(encryptedString);
+        JWSObject plaintextPayloadJose = sign(plaintext);
 
         DcsDecrypter decryptor = mock(DcsDecrypter.class);
-        when(decryptor.decrypt(encrypted)).thenReturn(plaintextPayloadJose.serialize());
+        when(decryptor.decrypt(encryptedString)).thenReturn(plaintextPayloadJose.serialize());
 
         String result = new DcsSecurePayloadExtractor(decryptor).getPayloadFor(encryptedPayloadJose.serialize());
+
         assertThat(result).isEqualTo(plaintext);
     }
 
@@ -52,43 +47,30 @@ public class DcsSecurePayloadExtractorTest {
 
     @Test(expected = JOSEException.class)
     public void shouldThrowExceptionWhenDecryptFails() throws Exception {
-        KeyPair keyPair = new RSAKeyPairGenerator().generateKeyPair();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-
-        String encrypted = "encrypted";
-
-        RSASSASigner signer = new RSASSASigner(privateKey);
-
-        JWSObject encryptedPayloadJose = new JWSObject(
-                new JWSHeader.Builder(JWSAlgorithm.RS256).build(),
-                new Payload(encrypted)
-        );
-        encryptedPayloadJose.sign(signer);
+        JWSObject encryptedPayloadJose = sign(encryptedString);
 
         DcsDecrypter decryptor = mock(DcsDecrypter.class);
-        when(decryptor.decrypt(encrypted)).thenThrow(new JOSEException("decryption failed"));
+        when(decryptor.decrypt(encryptedString)).thenThrow(new JOSEException("decryption failed"));
 
         new DcsSecurePayloadExtractor(decryptor).getPayloadFor(encryptedPayloadJose.serialize());
     }
 
     @Test(expected = ParseException.class)
     public void shouldThrowExceptionWhenInvalidDecryptedJose() throws Exception {
-        KeyPair keyPair = new RSAKeyPairGenerator().generateKeyPair();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-
-        String encrypted = "encrypted";
-
-        RSASSASigner signer = new RSASSASigner(privateKey);
-
-        JWSObject encryptedPayloadJose = new JWSObject(
-                new JWSHeader.Builder(JWSAlgorithm.RS256).build(),
-                new Payload(encrypted)
-        );
-        encryptedPayloadJose.sign(signer);
+        JWSObject encryptedPayloadJose = sign(encryptedString);
 
         DcsDecrypter decryptor = mock(DcsDecrypter.class);
-        when(decryptor.decrypt(encrypted)).thenReturn("invalid jose");
+        when(decryptor.decrypt(encryptedString)).thenReturn("invalid jose");
 
         new DcsSecurePayloadExtractor(decryptor).getPayloadFor(encryptedPayloadJose.serialize());
+    }
+
+    private JWSObject sign(String payload) throws JOSEException {
+        JWSObject jose = new JWSObject(
+                new JWSHeader.Builder(JWSAlgorithm.RS256).build(),
+                new Payload(payload)
+        );
+        jose.sign(signer);
+        return jose;
     }
 }

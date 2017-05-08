@@ -36,8 +36,12 @@ public class EvidenceCheckResourceTest {
             .build();
 
     @Before
-    public void setUp(){
+    public void setUp() throws Exception {
         reset(evidenceSecurity, dcsService, securePayloadExtractor, mockDcsResponse);
+
+        when(evidenceSecurity.secure(payload)).thenReturn(securedPayload);
+        when(dcsService.call(securedPayload)).thenReturn(mockDcsResponse);
+        when(securePayloadExtractor.getPayloadFor(dcsRawResponse)).thenReturn(expectedDecryptedBody);
     }
 
     @Test
@@ -46,20 +50,15 @@ public class EvidenceCheckResourceTest {
         when(mockDcsResponse.getHeaders()).thenReturn(new MultivaluedHashMap<>());
         when(mockDcsResponse.getStatus()).thenReturn(200);
 
-        when(evidenceSecurity.secure(payload)).thenReturn(securedPayload);
-        when(dcsService.call(securedPayload)).thenReturn(mockDcsResponse);
-        when(securePayloadExtractor.getPayloadFor(dcsRawResponse)).thenReturn(expectedDecryptedBody);
-
-        Result expectedResult = new Result(200, expectedDecryptedBody, "");
-
         Response response = resources.target("/check-evidence")
                 .request()
                 .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE));
 
-        Result result = response.readEntity(Result.class);
+        Result actualResult = response.readEntity(Result.class);
+        Result expectedResult = new Result(200, expectedDecryptedBody, "");
 
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(result).isEqualToComparingFieldByField(expectedResult);
+        assertThat(actualResult).isEqualToComparingFieldByField(expectedResult);
     }
 
     @Test
@@ -68,19 +67,15 @@ public class EvidenceCheckResourceTest {
         when(mockDcsResponse.getHeaders()).thenReturn(new MultivaluedHashMap<>());
         when(mockDcsResponse.getStatus()).thenReturn(503);
 
-        when(evidenceSecurity.secure(payload)).thenReturn(securedPayload);
-        when(dcsService.call(securedPayload)).thenReturn(mockDcsResponse);
-
-        Result expectedResult = new Result(503, "", "");
-
         Response response = resources.target("/check-evidence")
                 .request()
                 .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE));
 
-        Result result = response.readEntity(Result.class);
+        Result actualResult = response.readEntity(Result.class);
+        Result expectedResult = new Result(503, "", "");
 
         assertThat(response.getStatus()).isEqualTo(503);
-        assertThat(result).isEqualToComparingFieldByField(expectedResult);
+        assertThat(actualResult).isEqualToComparingFieldByField(expectedResult);
         verify(securePayloadExtractor, never()).getPayloadFor(anyString());
     }
 
@@ -94,19 +89,15 @@ public class EvidenceCheckResourceTest {
         when(mockDcsResponse.getHeaders()).thenReturn(headers);
         when(mockDcsResponse.getStatus()).thenReturn(500);
 
-        when(evidenceSecurity.secure(payload)).thenReturn(securedPayload);
-        when(dcsService.call(securedPayload)).thenReturn(mockDcsResponse);
-
-        Result expectedResult = new Result(500, "", dcsError);
-
         Response response = resources.target("/check-evidence")
                 .request()
                 .post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE));
 
-        Result result = response.readEntity(Result.class);
+        Result actualResult = response.readEntity(Result.class);
+        Result expectedResult = new Result(500, "", dcsError);
 
         assertThat(response.getStatus()).isEqualTo(500);
-        assertThat(result).isEqualToComparingFieldByField(expectedResult);
+        assertThat(actualResult).isEqualToComparingFieldByField(expectedResult);
         verify(securePayloadExtractor, never()).getPayloadFor(anyString());
     }
 }
