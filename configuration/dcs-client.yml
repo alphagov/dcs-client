@@ -15,10 +15,11 @@ httpClient:
 server:
   applicationConnectors:
     - type: http
-      port: 53000
+      port: 11000
   adminConnectors:
     - type: http
-      port: 53001
+      port: 11001
+      bindHost: localhost
 
 logging:
   level: INFO
@@ -26,8 +27,8 @@ logging:
     "uk.gov": DEBUG
   appenders:
     - type: file
-      currentLogFilename: logs/dcs-client.log
-      archivedLogFilenamePattern: logs/dcs-client.log.%d.gz
+      currentLogFilename: /var/log/dcs-client/dcs-client.log
+      archivedLogFilenamePattern: /var/log/dcs-client/dcs-client.log.%d.gz
 
 clientPrivateSigningKey: ${CLIENT_SIGNING_KEY}
 clientSigningCertificate: ${CLIENT_SIGNING_CERT}
