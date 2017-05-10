@@ -1,0 +1,14 @@
+#!/bin/sh
+
+set -e
+
+NAME="dcs-client"
+GROUP=$NAME
+USER=$NAME
+
+if [ "$1" = "purge" ]; then
+  rm -rf /var/log/$NAME
+  deluser --system $USER || true
+  delgroup --system --only-if-empty $GROUP || true
+fi
+
