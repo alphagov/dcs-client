@@ -19,14 +19,20 @@ It sends the JOSE to DCS, unsigns, decrypts, and again unsigns the response and 
 ## Running the client
 
 1. Have a running instance of DCS somewhere (local or remote)
-* Make sure the `dcsUrl` is set to point to this DCS instance in `<env>-dcs-client.yml`
-* Make sure you have the following environment variables set:
+1. Make sure the `dcsUrl` is set to point to this DCS instance in `<env>-dcs-client.yml`
+1. Make sure you have the following environment variables set:
+
 	* `CLIENT_SIGNING_KEY`: filepath to private key used for signing
 	* `CLIENT_SIGNING_CERT`: filepath to public cert used for signing
 	* `CLIENT_ENCRYPTION_KEY`: filepath to private key used for encryption
-	* `DCS_ENCRYPTION_CERT`: filepath to DCS's public cert for encryption   
-* Run the client with `./startup.sh`
-* `POST` the JSON Object to endpoint `/check-evidence` to see DCS
+	* `DCS_ENCRYPTION_CERT`: filepath to DCS's public cert for encryption
+	* `KEY_STORE_PATH`: filepath to key store
+	* `KEY_STORE_PASSWORD`: password to the key store
+	* `TRUST_STORE_PATH`: filepath to the trust store
+	* `TRUST_STORE_PASSWORD`: password to the trust store
+
+1. Run the client with `./startup.sh`
+1. `POST` the JSON Object to endpoint `/check-evidence` to see DCS
 
 ## Running the tests
 

@@ -1,5 +1,11 @@
 dcsUrl: override to use the stub
 
+httpClient:
+  timeout: 15s
+  connectionTimeout: 15s
+  cookiesEnabled: false
+  connectionTimeout: 15s
+
 server:
   applicationConnectors:
     - type: http
@@ -23,4 +29,4 @@ clientPrivateEncryptionKey: src/test/resources/private_key.pk8
 
 dcsEncryptionCertificate: src/test/resources/certificate.cert
 
-sslRequestHeader: /CN=ssl two
+sslRequestHeader: doesn't matter

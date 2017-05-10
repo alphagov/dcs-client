@@ -2,11 +2,12 @@ package uk.gov.ida.dcsclient;
 
 import com.nimbusds.jose.util.Base64URL;
 import io.dropwizard.Application;
+import io.dropwizard.client.JerseyClientBuilder;
+import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.glassfish.jersey.client.JerseyClientBuilder;
 import uk.gov.ida.dcsclient.config.DcsClientConfiguration;
 import uk.gov.ida.dcsclient.resources.EvidenceCheckResource;
 import uk.gov.ida.dcsclient.security.*;
@@ -44,7 +45,9 @@ public class DcsClientApplication extends Application<DcsClientConfiguration> {
         EvidenceSecurity evidenceSecurity = createEvidenceSecurity(configuration);
         DcsSecurePayloadExtractor securePayloadExtractor = createSecurePayloadExtractor(configuration);
 
-        Client client = JerseyClientBuilder.createClient();
+        JerseyClientConfiguration httpClientConfiguration = configuration.getHttpClient();
+
+        Client client = new JerseyClientBuilder(environment).using(httpClientConfiguration).build("dcs connection");
         DcsService dcsService = new DcsService(client, configuration.getDcsUrl(), configuration.getSslRequestHeader());
 
         environment.jersey().register(new EvidenceCheckResource(evidenceSecurity, dcsService, securePayloadExtractor));
