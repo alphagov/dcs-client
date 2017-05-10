@@ -1,5 +1,16 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-ospackage-plugin:4.4.0'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'nebula.ospackage'
 
 version='0.0.1'
 
@@ -56,4 +67,33 @@ shadowJar {
     }
 }
 
-// --------- //
+run {
+    args = ["server", "configuration/dcs-client.yml"]
+}
+
+mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
+
+task dcsClientDeb(type: Deb) {
+    packageName = 'dcs-client'
+    release = 1
+
+    requires('java8-runtime-headless')
+
+    postInstall file('ospackage/debian/dcs-client.postinst')
+    postUninstall file('ospackage/debian/dcs-client.postrm')
+
+    from(fatJar.outputs.files) {
+        into '/usr/share/java'
+    }
+
+    from('ospackage/debian/upstart.conf') {
+        into '/etc/init'
+        rename { 'dcs-client.conf' }
+    }
+
+    from('configuration/dcs-client.yml') {
+        into '/etc'
+    }
+    configurationFile('/etc/dcs-client.yml')
+}
+
