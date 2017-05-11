@@ -92,6 +92,12 @@ task dcsClientDeb(type: Deb) {
         rename { 'dcs-client.conf' }
     }
 
+    from('ospackage/debian/dcs-client.default') {
+        into '/etc/default'
+        rename { 'dcs-client' }
+    }
+    configurationFile('/etc/default/dcs-client')
+
     from('configuration/dcs-client.yml') {
         into '/etc'
     }

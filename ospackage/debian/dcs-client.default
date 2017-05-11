@@ -1,0 +1,14 @@
+# All of the below variables must be set
+
+#DCS_ENCRYPTION_CERT=
+#CLIENT_SIGNING_CERT=
+#CLIENT_SIGNING_KEY=
+#CLIENT_ENCRYPTION_KEY=
+#KEY_STORE_PATH=
+#KEY_STORE_PASSWORD=
+#TRUST_STORE_PATH=
+#TRUST_STORE_PASSWORD=
+
+# Once configured, change to "1" to enable startup of the service
+ENABLED="0"
+
