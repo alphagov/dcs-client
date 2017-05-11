@@ -22,3 +22,6 @@ if ! getent passwd $USER >/dev/null ; then
       $USER  >/dev/null
 fi
 
+mkdir -p /var/log/dcs-client
+chown $USER:$GROUP /var/log/dcs-client
+
