@@ -82,8 +82,9 @@ task dcsClientDeb(type: Deb) {
     postInstall file('ospackage/debian/dcs-client.postinst')
     postUninstall file('ospackage/debian/dcs-client.postrm')
 
-    from(fatJar.outputs.files) {
+    from(shadowJar.outputs.files) {
         into '/usr/share/java'
+        rename { "dcs-client-${version}.jar" }
     }
     link('/usr/share/java/dcs-client.jar', "/usr/share/java/dcs-client-${version}.jar")
 
