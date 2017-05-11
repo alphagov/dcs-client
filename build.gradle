@@ -9,11 +9,10 @@ repositories {
 
 dependencies {
     compile(
-        'io.dropwizard:dropwizard-core:1.0.5',
-        'io.dropwizard:dropwizard-client:1.0.5',
+        'io.dropwizard:dropwizard-core:1.1.0',
+        'io.dropwizard:dropwizard-client:1.1.0',
         'com.nimbusds:nimbus-jose-jwt:4.0',
-        'commons-codec:commons-codec:1.7',
-        'eu.appsatori:gradle-fatjar-plugin:0.2'
+        'commons-codec:commons-codec:1.7'
     )
     testCompile(
         'junit:junit:4.12',
@@ -22,16 +21,32 @@ dependencies {
     )
 }
 
+run {
+    args = ["server", "configuration/dcs-client.yml"]
+}
+
+mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
+
 compileTestJava {
     options.fork = true
     options.forkOptions.executable = 'javac'
     options.compilerArgs << "-XDignore.symbol.file"
 }
 
-task fatJar(type: Jar) {
+
+// ----- CREATE FATJAR ---- //
+
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+    }
+}
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
     baseName = project.name
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+    mergeServiceFiles()
     manifest {
         attributes(
             'Implementation-Title': 'DCS Client',
@@ -41,8 +56,4 @@ task fatJar(type: Jar) {
     }
 }
 
-run {
-    args = ["server", "configuration/dcs-client.yml"]
-}
-
-mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
+// --------- //
