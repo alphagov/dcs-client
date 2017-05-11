@@ -85,6 +85,7 @@ task dcsClientDeb(type: Deb) {
     from(fatJar.outputs.files) {
         into '/usr/share/java'
     }
+    link('/usr/share/java/dcs-client.jar', "/usr/share/java/dcs-client-${version}.jar")
 
     from('ospackage/debian/upstart.conf') {
         into '/etc/init'
