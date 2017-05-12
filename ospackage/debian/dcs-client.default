@@ -1,5 +1,7 @@
 # All of the below variables must be set
 
+#DCS_URL=
+#SSL_REQUEST_HEADER=
 #DCS_ENCRYPTION_CERT=
 #CLIENT_SIGNING_CERT=
 #CLIENT_SIGNING_KEY=
