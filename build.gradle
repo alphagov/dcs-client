@@ -73,7 +73,7 @@ run {
 
 mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
 
-task dcsClientDeb(type: Deb) {
+task buildDeb(type: Deb, overwrite: true) {
     packageName = 'dcs-client'
     release = 1
 
