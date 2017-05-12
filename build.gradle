@@ -75,7 +75,7 @@ mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
 
 task buildDeb(type: Deb, overwrite: true) {
     packageName = 'dcs-client'
-    release = 1
+    release = System.getenv('BUILD_NUMBER') ?: '0'
 
     requires('java8-runtime-headless')
 
