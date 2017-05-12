@@ -100,9 +100,9 @@ task buildDeb(type: Deb, overwrite: true) {
     configurationFile('/etc/default/dcs-client')
 
     from('configuration/dcs-client.yml') {
-        into '/etc'
+        into '/etc/dcs'
     }
-    configurationFile('/etc/dcs-client.yml')
+    configurationFile('/etc/dcs/dcs-client.yml')
 }
 
 // --------- //
