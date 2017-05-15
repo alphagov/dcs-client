@@ -1,0 +1,27 @@
+#!/bin/sh
+
+set -e
+
+NAME="dcs-client"
+GROUP=$NAME
+USER=$NAME
+
+if ! getent group $GROUP >/dev/null ; then
+    addgroup --system $GROUP >/dev/null
+fi
+
+if ! getent passwd $USER >/dev/null ; then
+    # Adding system user
+    adduser \
+      --system \
+      --disabled-login \
+      --ingroup $GROUP \
+      --home "/nonexistent" \
+      --gecos "DCS Client" \
+      --shell /bin/false \
+      $USER  >/dev/null
+fi
+
+mkdir -p /var/log/dcs-client
+chown $USER:$GROUP /var/log/dcs-client
+
