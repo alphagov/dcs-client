@@ -76,7 +76,7 @@ run {
 
 mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
 
-task buildDeb(type: Deb, overwrite: true) {
+task buildDeb(type: Deb, overwrite: true, dependsOn: 'shadowJar') {
     packageName = 'dcs-client'
     release = System.getenv('BUILD_NUMBER') ?: '0'
 
@@ -113,7 +113,7 @@ docker {
   maintainer("verify-tech@digital.cabinet-office.gov.uk")
 }
 
-task buildContainer(type: Docker) {
+task buildContainer(type: Docker, dependsOn: 'shadowJar') {
   addFile(shadowJar.outputs.files.first(), "/usr/local/lib")
   addFile("configuration/dcs-client.yml", "/etc/dcs-client.yml")
   defaultCommand([
