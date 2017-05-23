@@ -5,13 +5,16 @@ buildscript {
 
     dependencies {
         classpath 'com.netflix.nebula:gradle-ospackage-plugin:4.4.0'
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'nebula.ospackage'
+apply plugin: 'docker'
 
+group='alphagov'
 version='0.0.1'
 
 repositories {
@@ -73,7 +76,7 @@ run {
 
 mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
 
-task buildDeb(type: Deb, overwrite: true) {
+task buildDeb(type: Deb, overwrite: true, dependsOn: 'shadowJar') {
     packageName = 'dcs-client'
     release = System.getenv('BUILD_NUMBER') ?: '0'
 
@@ -103,6 +106,26 @@ task buildDeb(type: Deb, overwrite: true) {
         into '/etc/dcs'
     }
     configurationFile('/etc/dcs/dcs-client.yml')
+}
+
+docker {
+  baseImage("openjdk:8-jre-alpine")
+  maintainer("verify-tech@digital.cabinet-office.gov.uk")
+}
+
+task buildContainer(type: Docker, dependsOn: 'shadowJar') {
+  addFile(shadowJar.outputs.files.first(), "/usr/local/lib")
+  addFile("configuration/dcs-client.yml", "/etc/dcs-client.yml")
+  defaultCommand([
+    "java",
+    "-jar",
+    "/usr/local/lib/${shadowJar.outputs.files.first().getName()}",
+    "server",
+    "/etc/dcs-client.yml"
+  ])
+  exposePort(11000)
+  exposePort(11001)
+  tagVersion('latest')
 }
 
 // --------- //
