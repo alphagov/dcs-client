@@ -14,7 +14,7 @@ It sends the JOSE to DCS, unsigns, decrypts, and again unsigns the response and 
 
 ## Creating deployable JAR
 
-`./gradlew build clean fatJar`
+`./gradlew clean build shadowJar`
 
 ## Running the client
 
