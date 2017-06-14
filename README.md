@@ -12,6 +12,10 @@ The client takes a plain JSON object and produces a JOSE object after signing, e
 
 It sends the JOSE to DCS, unsigns, decrypts, and again unsigns the response and provides the end user with the plaintext response from DCS.
 
+## Where to find the latest release
+
+https://github.com/alphagov/dcs-client/releases/latest
+
 ## Creating deployable JAR
 
 `./gradlew clean build shadowJar`
@@ -37,3 +41,16 @@ It sends the JOSE to DCS, unsigns, decrypts, and again unsigns the response and 
 ## Running the tests
 
 `./pre-commit.sh`
+
+## Creating a new release
+
+1. Make sure the build.gradle file has been updated with the correct version number for the release.
+1. Run the following command: `./gradlew -PapiToken <your GitHub API token>`
+
+If you don't have a GitHub API token, you will need to create one:
+
+1. Go to your GitHub personal settings.
+1. Look at the Developer Settings box at the bottom left of the page.  Click 'Personal Access Tokens'.
+1. Choose 'Generate new token'.
+1. Provide a name of your choice for the token in the description field.  Make sure the 'repo' scopes are selected.
+1. Click 'Generate token' to complete the process, and now copy the token and copy the token from the green box.  Record it somewhere safe, as GitHub will nto show it to you again (but if you lose it, you can just delete the token and generate a new one).
