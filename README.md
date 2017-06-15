@@ -16,10 +16,6 @@ It sends the JOSE to DCS, unsigns, decrypts, and again unsigns the response and 
 
 https://github.com/alphagov/dcs-client/releases/latest
 
-## Creating deployable JAR
-
-`./gradlew clean build shadowJar`
-
 ## Running the client
 
 1. Have a running instance of DCS somewhere (local or remote)
@@ -35,17 +31,33 @@ https://github.com/alphagov/dcs-client/releases/latest
 	* `TRUST_STORE_PATH`: filepath to the trust store
 	* `TRUST_STORE_PASSWORD`: password to the trust store
 
-1. Run the client with `./startup.sh`
+1. See 'running from the JAR' or 'running with gradle' section below, as appropriate.
 1. `POST` the JSON Object to endpoint `/check-evidence` to see DCS
+
+### Running from the JAR
+
+    java -jar dcs-client.jar server configuration/dcs-client.yml
+
+### Running with gradle
+
+Run the client with `./startup.sh`
 
 ## Running the tests
 
 `./pre-commit.sh`
 
+## Creating deployable JAR
+
+`./gradlew clean build shadowJar`
+
 ## Creating a new release
 
-1. Make sure the build.gradle file has been updated with the correct version number for the release.
-1. Run the following command: `./gradlew -PapiToken <your GitHub API token>`
+Note that gradle will automatically run the pre-commit tests and create a deployable JAR when you follow the process below; you do not need to do these things separately.
+
+1. Edit the gradle.build file and make sure the correct values are used for the following variables (just after the section where plugins are applied):
+    1. version: The correct version number for the release.
+    1. apiToken: Your GitHub API token (see below)
+1. Run the following command: `./gradlew githubRelease
 
 If you don't have a GitHub API token, you will need to create one:
 

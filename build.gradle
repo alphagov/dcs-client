@@ -17,8 +17,7 @@ apply plugin: 'docker'
 apply plugin: 'co.riiid.gradle'
 
 group = 'alphagov'
-version = '0.0.2'
-//def token = 'not-set'
+def apiToken = project.hasProperty('githubApiToken') ? project.getProperty('githubApiToken') : 'undefined'
 
 repositories {
     mavenCentral()
@@ -72,28 +71,22 @@ shadowJar {
     }
 }
 
-//github {
-//    owner = 'mahmudh'
-//    repo = 'sinatra_json_parser'
-//    token = "${token}"
-//    tagName = "${version}"
-//    targetCommitish = 'master'
-//    name = "${version}"
-//    body = ""
-//    assets = [
-//            "build/libs/dcs-client-${version}-all.jar",
-//            'README.md',
-//            'releaseNotes.md'
-//    ]
-//}
+github {
+    owner = 'alphagov'
+    repo = 'dcs-client'
+    token = "${apiToken}"
+    tagName = "${version}"
+    targetCommitish = 'master'
+    name = "${version}"
+    body = "This is a test."
+    assets = [
+            "build/libs/dcs-client-${version}-all.jar",
+            'README.md'
+    ]
+}
 
-//task preCommit(type: Exec) {
-//    exec {
-//        commandLine 'sh', 'pre-commit.sh'
-//    }
-//}
-
-//githubRelease.dependsOn shadowJar
+githubRelease.dependsOn test
+githubRelease.dependsOn shadowJar
 
 run {
     args = ["server", "configuration/dcs-client.yml"]
