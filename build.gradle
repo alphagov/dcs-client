@@ -77,8 +77,8 @@ github {
     token = "${apiToken}"
     tagName = "${version}"
     targetCommitish = 'master'
-    name = "${version}"
-    body = "This is a test."
+    name = "DCS Client v${version}"
+    body = new File('RELEASE_NOTES.md').text
     assets = [
             "build/libs/dcs-client-${version}-all.jar",
             'README.md'
