@@ -6,6 +6,7 @@ buildscript {
     dependencies {
         classpath 'com.netflix.nebula:gradle-ospackage-plugin:4.4.0'
         classpath 'se.transmode.gradle:gradle-docker:1.2'
+        classpath 'co.riiid:gradle-github-plugin:0.4.2'
     }
 }
 
@@ -13,9 +14,10 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'nebula.ospackage'
 apply plugin: 'docker'
+apply plugin: 'co.riiid.gradle'
 
-group='alphagov'
-version='0.0.1'
+group = 'alphagov'
+def apiToken = project.hasProperty('githubApiToken') ? project.getProperty('githubApiToken') : 'undefined'
 
 repositories {
     mavenCentral()
@@ -23,15 +25,15 @@ repositories {
 
 dependencies {
     compile(
-        'io.dropwizard:dropwizard-core:1.1.0',
-        'io.dropwizard:dropwizard-client:1.1.0',
-        'com.nimbusds:nimbus-jose-jwt:4.0',
-        'commons-codec:commons-codec:1.7'
+            'io.dropwizard:dropwizard-core:1.1.0',
+            'io.dropwizard:dropwizard-client:1.1.0',
+            'com.nimbusds:nimbus-jose-jwt:4.0',
+            'commons-codec:commons-codec:1.7'
     )
     testCompile(
-        'junit:junit:4.12',
-        'io.dropwizard:dropwizard-testing:1.1.0',
-        'org.mockito:mockito-core:2.7.22'
+            'junit:junit:4.12',
+            'io.dropwizard:dropwizard-testing:1.1.0',
+            'org.mockito:mockito-core:2.7.22'
     )
 }
 
@@ -46,7 +48,6 @@ compileTestJava {
     options.forkOptions.executable = 'javac'
     options.compilerArgs << "-XDignore.symbol.file"
 }
-
 
 // ----- CREATE FATJAR ---- //
 
@@ -63,12 +64,29 @@ shadowJar {
     mergeServiceFiles()
     manifest {
         attributes(
-            'Implementation-Title': 'DCS Client',
-            'Implementation-Version': version,
-            'Main-Class': 'uk.gov.ida.dcsclient.DcsClientApplication'
+                'Implementation-Title': 'DCS Client',
+                'Implementation-Version': version,
+                'Main-Class': 'uk.gov.ida.dcsclient.DcsClientApplication'
         )
     }
 }
+
+github {
+    owner = 'alphagov'
+    repo = 'dcs-client'
+    token = "${apiToken}"
+    tagName = "${version}"
+    targetCommitish = 'master'
+    name = "DCS Client v${version}"
+    body = new File('RELEASE_NOTES.md').text
+    assets = [
+            "build/libs/dcs-client-${version}-all.jar",
+            'README.md'
+    ]
+}
+
+githubRelease.dependsOn test
+githubRelease.dependsOn shadowJar
 
 run {
     args = ["server", "configuration/dcs-client.yml"]
@@ -109,23 +127,22 @@ task buildDeb(type: Deb, overwrite: true, dependsOn: 'shadowJar') {
 }
 
 docker {
-  baseImage("openjdk:8-jre-alpine")
-  maintainer("verify-tech@digital.cabinet-office.gov.uk")
+    baseImage("openjdk:8-jre-alpine")
+    maintainer("verify-tech@digital.cabinet-office.gov.uk")
 }
 
 task buildContainer(type: Docker, dependsOn: 'shadowJar') {
-  addFile(shadowJar.outputs.files.first(), "/usr/local/lib")
-  addFile("configuration/dcs-client.yml", "/etc/dcs-client.yml")
-  defaultCommand([
-    "java",
-    "-jar",
-    "/usr/local/lib/${shadowJar.outputs.files.first().getName()}",
-    "server",
-    "/etc/dcs-client.yml"
-  ])
-  exposePort(11000)
-  exposePort(11001)
-  tagVersion('latest')
+    addFile(shadowJar.outputs.files.first(), "/usr/local/lib")
+    addFile("configuration/dcs-client.yml", "/etc/dcs-client.yml")
+    defaultCommand([
+            "java",
+            "-jar",
+            "/usr/local/lib/${shadowJar.outputs.files.first().getName()}",
+            "server",
+            "/etc/dcs-client.yml"
+    ])
+    exposePort(11000)
+    exposePort(11001)
+    tagVersion('latest')
 }
-
 // --------- //
