@@ -31,6 +31,8 @@ https://github.com/alphagov/dcs-client/releases/latest
 	* `TRUST_STORE_PASSWORD`: password to the trust store
 	* `DCS_URL`: The url that you want to send the request to
 	* `SSL_REQUEST_HEADER`: Distinguished name for SSL handshake
+	* `DCS_PORT`: port number for the client (defaults to 11000 if not specified)
+	* `DCS_LOG_LEVEL`: application log level (defaults to INFO if not specified)
 
 1. See 'running from the JAR' or 'running with gradle' section below, as appropriate.
 1. `POST` the JSON Object to endpoint `/check-evidence` to see DCS
@@ -42,6 +44,8 @@ https://github.com/alphagov/dcs-client/releases/latest
 ### Running with gradle
 
 Run the client with `./startup.sh`
+
+# Development
 
 ## Running the tests
 

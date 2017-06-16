@@ -4,13 +4,21 @@ import com.nimbusds.jose.util.Base64URL;
 import io.dropwizard.Application;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.client.JerseyClientConfiguration;
+import io.dropwizard.configuration.ConfigurationSourceProvider;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.FileConfigurationSourceProvider;
+import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import uk.gov.ida.dcsclient.config.DcsClientConfiguration;
 import uk.gov.ida.dcsclient.resources.EvidenceCheckResource;
-import uk.gov.ida.dcsclient.security.*;
+import uk.gov.ida.dcsclient.security.DcsDecrypter;
+import uk.gov.ida.dcsclient.security.DcsEncrypter;
+import uk.gov.ida.dcsclient.security.DcsKeyGenerator;
+import uk.gov.ida.dcsclient.security.DcsSecurePayloadExtractor;
+import uk.gov.ida.dcsclient.security.DcsSigner;
+import uk.gov.ida.dcsclient.security.EvidenceSecurity;
 import uk.gov.ida.dcsclient.services.DcsService;
 
 import javax.ws.rs.client.Client;
@@ -18,15 +26,25 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 
 public class DcsClientApplication extends Application<DcsClientConfiguration> {
+    private final ConfigurationSourceProvider sourceProvider;
+
+    public DcsClientApplication(ConfigurationSourceProvider sourceProvider) {
+        this.sourceProvider = sourceProvider;
+    }
+
     public static void main(String[] args) throws Exception {
-        new DcsClientApplication().run(args);
+        if (args.length == 0) {
+            new DcsClientApplication(new ResourceConfigurationSourceProvider()).run("server", "dcs-client.yml");
+        } else {
+            new DcsClientApplication(new FileConfigurationSourceProvider()).run(args);
+        }
     }
 
     @Override
     public void initialize(Bootstrap<DcsClientConfiguration> bootstrap){
         bootstrap.setConfigurationSourceProvider(
             new SubstitutingSourceProvider(
-                bootstrap.getConfigurationSourceProvider(),
+                sourceProvider,
                 new EnvironmentVariableSubstitutor()
             )
         );

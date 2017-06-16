@@ -18,6 +18,7 @@ apply plugin: 'co.riiid.gradle'
 
 group = 'alphagov'
 def apiToken = project.hasProperty('githubApiToken') ? project.getProperty('githubApiToken') : 'undefined'
+version = "${baseVersion}.${majorVersion}.${minorVersion}"
 
 repositories {
     mavenCentral()
@@ -80,13 +81,24 @@ github {
     name = "DCS Client v${version}"
     body = new File('RELEASE_NOTES.md').text
     assets = [
-            "build/libs/dcs-client-${version}-all.jar",
+            "build/distributions/dcs-client-${version}.zip",
             'README.md'
     ]
 }
 
 githubRelease.dependsOn test
-githubRelease.dependsOn shadowJar
+githubRelease.dependsOn distZip
+
+task release(dependsOn: 'githubRelease') {
+    doLast{
+        Integer incrementedMinorVersion = Integer.parseInt(minorVersion) + 1
+        def nextMinorVersionString = "${incrementedMinorVersion}-pre"
+
+        ant.replace(file: "gradle.properties", token: "minorVersion=${minorVersion}", value: "minorVersion=${nextMinorVersionString}")
+    }
+}
+
+mainClassName = "uk.gov.ida.dcsclient.DcsClientApplication "
 
 run {
     args = ["server", "configuration/dcs-client.yml"]

@@ -1,1 +1,1 @@
-This is the first version of the DCS client. Expect more changes or whatever.
+This is the initial release of the DCS Client.  Please see the README for further details.
