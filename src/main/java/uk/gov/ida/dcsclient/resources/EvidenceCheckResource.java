@@ -50,6 +50,9 @@ public class EvidenceCheckResource {
         } catch (DcsConnectionException e) {
             LOG.warn(ExceptionUtils.getStackTrace(e));
             return Response.status(HttpStatus.SERVICE_UNAVAILABLE_503).entity(e.getMessage()).build();
+        } catch (Exception e) {
+            LOG.error(ExceptionUtils.getStackTrace(e));
+            throw e;
         }
     }
 
@@ -60,6 +63,7 @@ public class EvidenceCheckResource {
 
     private String getBodyFrom(Response response) throws ParseException, JOSEException {
         String responseBody = response.readEntity(String.class);
+        LOG.info("Received response from DCS: ", responseBody);
         return responseBody.isEmpty()
                 ? responseBody
                 : securePayloadExtractor.getPayloadFor(responseBody);
