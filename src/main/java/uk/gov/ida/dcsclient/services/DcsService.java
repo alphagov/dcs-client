@@ -9,8 +9,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 public class DcsService {
-    public static final String APPLICATION_MEDIA_TYPE_JOSE = "application/jose";
-    public static final String COMMON_NAME_HEADER = "X-ssl-client-s-dn";
+    static final String APPLICATION_MEDIA_TYPE_JOSE = "application/jose";
+    static final String COMMON_NAME_HEADER = "X-ssl-client-s-dn";
     private static final Logger LOG = LoggerFactory.getLogger(DcsService.class);;
 
     private final Client httpClient;

@@ -15,9 +15,6 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.InvalidKeySpecException;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;
-import static org.apache.commons.codec.digest.DigestUtils.sha1;
-
 @Path("/checks/driving-licence")
 @Produces(MediaType.APPLICATION_JSON)
 public class StubDcs {
@@ -32,9 +29,9 @@ public class StubDcs {
     }
 
     public void setUpKeys(String certificatePath, String privateKeyPath) throws InvalidKeySpecException, CertificateException, NoSuchAlgorithmException, IOException {
-        X509Certificate certificate = new DcsKeyGenerator().generateCertificate(new File(certificatePath));
-        RSAPrivateKey privateKey = new DcsKeyGenerator().generatePrivateKey(new File(privateKeyPath));
-        Base64URL thumbprint = new Base64URL(encodeBase64URLSafeString(sha1(certificate.getEncoded())));
+        X509Certificate certificate = DcsKeyGenerator.generateCertificate(new File(certificatePath));
+        RSAPrivateKey privateKey = DcsKeyGenerator.generatePrivateKey(new File(privateKeyPath));
+        Base64URL thumbprint = DcsKeyGenerator.generateThumbprint(certificate);
 
         DcsEncrypter encrypter = new DcsEncrypter(certificate);
         DcsSigner signer = new DcsSigner(privateKey, thumbprint);

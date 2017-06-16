@@ -23,8 +23,8 @@ import java.text.ParseException;
 @Produces(MediaType.APPLICATION_JSON)
 public class EvidenceCheckResource {
 
-    public static final String DCS_ERROR_HEADER = "X-Dcs-Error";
-    public static final Logger LOG = LoggerFactory.getLogger("uk.gov");
+    static final String DCS_ERROR_HEADER = "X-Dcs-Error";
+    private static final Logger LOG = LoggerFactory.getLogger("uk.gov");
 
     private EvidenceSecurity evidenceSecurity;
     private DcsService dcsService;

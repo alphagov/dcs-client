@@ -14,7 +14,7 @@ public class DcsDecrypter {
         this.privateKey = privateKey;
     }
 
-    public String decrypt(String encrypted) throws ParseException, JOSEException {
+    String decrypt(String encrypted) throws ParseException, JOSEException {
         JWEObject jweObject = JWEObject.parse(encrypted);
         RSADecrypter rsaDecrypter = new RSADecrypter(privateKey);
 

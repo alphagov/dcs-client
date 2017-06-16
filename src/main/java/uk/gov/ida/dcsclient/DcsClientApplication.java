@@ -17,9 +17,6 @@ import javax.ws.rs.client.Client;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 
-import static org.apache.commons.codec.binary.Base64.encodeBase64URLSafeString;
-import static org.apache.commons.codec.digest.DigestUtils.sha1;
-
 public class DcsClientApplication extends Application<DcsClientConfiguration> {
     public static void main(String[] args) throws Exception {
         new DcsClientApplication().run(args);
@@ -65,9 +62,9 @@ public class DcsClientApplication extends Application<DcsClientConfiguration> {
     }
 
     private DcsSigner createSigner(DcsClientConfiguration configuration) throws Exception {
-        X509Certificate clientPublicSigningCert = DcsKeyGenerator.generateCertificate(configuration.getClientSigningCertificate());
         RSAPrivateKey clientPrivateSigningKey = DcsKeyGenerator.generatePrivateKey(configuration.getClientPrivateSigningKey());
-        Base64URL clientThumbprint = new Base64URL(encodeBase64URLSafeString(sha1(clientPublicSigningCert.getEncoded())));
+        X509Certificate clientPublicSigningCert = DcsKeyGenerator.generateCertificate(configuration.getClientSigningCertificate());
+        Base64URL clientThumbprint = DcsKeyGenerator.generateThumbprint(clientPublicSigningCert);
         return new DcsSigner(clientPrivateSigningKey, clientThumbprint);
     }
 

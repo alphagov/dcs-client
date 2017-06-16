@@ -16,7 +16,7 @@ public class DcsSigner {
         this.thumbprint = thumbprint;
     }
 
-    public String sign(String input) throws JOSEException {
+    String sign(String input) throws JOSEException {
         JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.RS256)
                 .x509CertThumbprint(thumbprint)
                 .build();
