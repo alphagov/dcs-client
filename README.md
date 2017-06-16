@@ -19,7 +19,6 @@ https://github.com/alphagov/dcs-client/releases/latest
 ## Running the client
 
 1. Have a running instance of DCS somewhere (local or remote)
-1. Make sure the `dcsUrl` is set to point to this DCS instance in `<env>-dcs-client.yml`
 1. Make sure you have the following environment variables set:
 
 	* `CLIENT_SIGNING_KEY`: filepath to private key used for signing
@@ -30,6 +29,8 @@ https://github.com/alphagov/dcs-client/releases/latest
 	* `KEY_STORE_PASSWORD`: password to the key store
 	* `TRUST_STORE_PATH`: filepath to the trust store
 	* `TRUST_STORE_PASSWORD`: password to the trust store
+	* `DCS_URL`: The url that you want to send the request to
+	* `SSL_REQUEST_HEADER`: Distinguished name for SSL handshake
 
 1. See 'running from the JAR' or 'running with gradle' section below, as appropriate.
 1. `POST` the JSON Object to endpoint `/check-evidence` to see DCS
