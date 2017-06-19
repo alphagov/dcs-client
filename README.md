@@ -18,8 +18,7 @@ https://github.com/alphagov/dcs-client/releases/latest
 
 ## Running the client
 
-1. Have a running instance of DCS somewhere (local or remote)
-1. Make sure you have the following environment variables set:
+1. You will need to specify some configuration details for the DCS client.  You can do this either by providing a configuration file (see below), or by setting the following environment variables:
 
 	* `CLIENT_SIGNING_KEY`: filepath to private key used for signing
 	* `CLIENT_SIGNING_CERT`: filepath to public cert used for signing
@@ -29,45 +28,26 @@ https://github.com/alphagov/dcs-client/releases/latest
 	* `KEY_STORE_PASSWORD`: password to the key store
 	* `TRUST_STORE_PATH`: filepath to the trust store
 	* `TRUST_STORE_PASSWORD`: password to the trust store
-	* `DCS_URL`: The url that you want to send the request to
+	* `DCS_URL`: The URL for DCS - currently 
 	* `SSL_REQUEST_HEADER`: Distinguished name for SSL handshake
 	* `DCS_PORT`: port number for the client (defaults to 11000 if not specified)
 	* `DCS_LOG_LEVEL`: application log level (defaults to INFO if not specified)
 
-1. See 'running from the JAR' or 'running with gradle' section below, as appropriate.
-1. `POST` the JSON Object to endpoint `/check-evidence` to see DCS
+1. Unzip the distribution zip file, and go to the 'bin' folder.
+1. See the sections below for the commands to run the DCS client under various OS environments.
+    * If you want to specify a configuration file, add `server pathToConfigFile` at the end of the command, where pathToConfigFile is the full path to a valid yml config file for the DCS client.
+1. When the client is running, `POST` the JSON Object to endpoint `/check-evidence` to see DCS
 
-### Running from the JAR
+### Creating a configuration file
 
-    java -jar dcs-client.jar server configuration/dcs-client.yml
+A template configuration file is provided in each distribution.  You can use this as a basis for a custom configuration file.  In the template, some of the values are set to just use the environment variables described above - these have the format ${VARIABLE_NAME}.  If you prefer to specify these values directly in the file, just replace these variables with the values you want to use.
 
-### Running with gradle
+You can also use the configuration file to control settings used by DropWizard.  For further details on how to do this, see http://www.dropwizard.io/1.1.0/docs/manual/configuration.html.
 
-Run the client with `./startup.sh`
+### Running from Windows
 
-# Development
+Run the client with `dcs-client.bat`
 
-## Running the tests
+### Running from a Bash shell
 
-`./pre-commit.sh`
-
-## Creating deployable JAR
-
-`./gradlew clean build shadowJar`
-
-## Creating a new release
-
-Note that gradle will automatically run the pre-commit tests and create a deployable JAR when you follow the process below; you do not need to do these things separately.
-
-1. Edit the gradle.build file and make sure the correct values are used for the following variables (just after the section where plugins are applied):
-    1. version: The correct version number for the release.
-    1. apiToken: Your GitHub API token (see below)
-1. Run the following command: `./gradlew githubRelease
-
-If you don't have a GitHub API token, you will need to create one:
-
-1. Go to your GitHub personal settings.
-1. Look at the Developer Settings box at the bottom left of the page.  Click 'Personal Access Tokens'.
-1. Choose 'Generate new token'.
-1. Provide a name of your choice for the token in the description field.  Make sure the 'repo' scopes are selected.
-1. Click 'Generate token' to complete the process, and now copy the token and copy the token from the green box.  Record it somewhere safe, as GitHub will nto show it to you again (but if you lose it, you can just delete the token and generate a new one).
+Run the client with `./dcs-client`
