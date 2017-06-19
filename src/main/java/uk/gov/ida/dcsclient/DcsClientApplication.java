@@ -28,6 +28,10 @@ import java.security.interfaces.RSAPrivateKey;
 public class DcsClientApplication extends Application<DcsClientConfiguration> {
     private final ConfigurationSourceProvider sourceProvider;
 
+    public DcsClientApplication() {
+        this(new FileConfigurationSourceProvider());
+    }
+
     public DcsClientApplication(ConfigurationSourceProvider sourceProvider) {
         this.sourceProvider = sourceProvider;
     }
@@ -36,7 +40,7 @@ public class DcsClientApplication extends Application<DcsClientConfiguration> {
         if (args.length == 0) {
             new DcsClientApplication(new ResourceConfigurationSourceProvider()).run("server", "dcs-client.yml");
         } else {
-            new DcsClientApplication(new FileConfigurationSourceProvider()).run(args);
+            new DcsClientApplication().run(args);
         }
     }
 
