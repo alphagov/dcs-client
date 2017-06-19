@@ -16,9 +16,16 @@ It sends the JOSE to DCS, unsigns, decrypts, and again unsigns the response and 
 
 https://github.com/alphagov/dcs-client/releases/latest
 
-## Running the client
+## Using the client
 
-1. You will need to specify some configuration details for the DCS client.  You can do this either by providing a configuration file (see below), or by setting the following environment variables:
+In development mode, you can run the client either with `gradle` or by producing an executable JAR.
+
+This section explains how to setup the client and make a request.
+
+### Prerequisites
+
+1. Have a running instance of DCS. You can start up one locally or use an existing DCS environment.
+1. Unless you specify a configuration file as a commandline argument when running the client, you will need to configure the following environment variables:
 
 	* `CLIENT_SIGNING_KEY`: filepath to private key used for signing
 	* `CLIENT_SIGNING_CERT`: filepath to public cert used for signing
@@ -28,26 +35,51 @@ https://github.com/alphagov/dcs-client/releases/latest
 	* `KEY_STORE_PASSWORD`: password to the key store
 	* `TRUST_STORE_PATH`: filepath to the trust store
 	* `TRUST_STORE_PASSWORD`: password to the trust store
-	* `DCS_URL`: The URL for DCS
+	* `DCS_URL`: The url that you want to send the request to
 	* `SSL_REQUEST_HEADER`: Distinguished name for SSL handshake
 	* `DCS_PORT`: port number for the client (defaults to 11000 if not specified)
 	* `DCS_LOG_LEVEL`: application log level (defaults to INFO if not specified)
 
-1. Unzip the distribution zip file, and go to the 'bin' folder.
-1. See the sections below for the commands to run the DCS client under various OS environments.
-    * If you want to specify a configuration file, add `server pathToConfigFile` at the end of the command, where pathToConfigFile is the full path to a valid yml config file for the DCS client.
-1. When the client is running, `POST` the JSON Object to endpoint `/check-evidence` to see DCS
+1. See 'running from the JAR' or 'running with gradle' section below, as appropriate.
 
-### Creating a configuration file
+### Running with gradle
 
-A template configuration file is provided in each distribution.  You can use this as a basis for a custom configuration file.  In the template, some of the values are set to just use the environment variables described above - these have the format ${VARIABLE_NAME}.  If you prefer to specify these values directly in the file, just replace these variables with the values you want to use.
+Run the client with `./startup.sh`
 
-You can also use the configuration file to control settings used by DropWizard.  For further details on how to do this, see http://www.dropwizard.io/1.1.0/docs/manual/configuration.html.
+### Creating and running executable JAR
 
-### Running from Windows
+Creating:
 
-Run the client with `dcs-client.bat`
+    ./gradlew clean build shadowJar
 
-### Running from a Bash shell
+Running:
 
-Run the client with `./dcs-client`
+    java -jar dcs-client.jar server configuration/dcs-client.yml
+
+Note that the 'server' argument, which allows you to specify a configuration file, is optional.  If you do not provide it, then values will be used from the environment variables instead.
+
+### Sending a request to the client
+
+    curl -X POST -d @client-request-data.json http://localhost:11000/check-evidence
+
+The `client-request-data.json` should contain the appropriate request for the check you want to test (i.e. either a licence or a passport check).
+See https://github.com/alphagov/dcs-client/blob/master/src/test/resources/request.json as an example.
+
+## Running the tests
+
+    ./pre-commit.sh
+
+## Creating a new release
+
+Note that gradle will automatically run the pre-commit tests and create a deployable JAR when you follow the process below; you do not need to do these things separately.
+
+1. Edit gradle.properties file and check that the version number information is correct.
+1. Run the following command: `./gradlew -PgithubApiToken=yourApiToken release`, where yourApiToken is your own GitHub API token.
+
+If you don't have a GitHub API token, you will need to create one:
+
+1. Go to your GitHub personal settings.
+1. Look at the Developer Settings box at the bottom left of the page.  Click 'Personal Access Tokens'.
+1. Choose 'Generate new token'.
+1. Provide a name of your choice for the token in the description field.  Make sure the 'repo' scopes are selected.
+1. Click 'Generate token' to complete the process, and now copy the token and copy the token from the green box.  Record it somewhere safe, as GitHub will nto show it to you again (but if you lose it, you can just delete the token and generate a new one).

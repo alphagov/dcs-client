@@ -1,4 +1,7 @@
-dcsUrl: ${DCS_URL}
+server:
+  applicationConnectors:
+    - type: http
+      port: ${DCS_PORT:-11000}
 
 httpClient:
   timeout: 15s
@@ -12,17 +15,14 @@ httpClient:
     trustStorePassword: ${TRUST_STORE_PASSWORD}
     verifyHostname: false
 
-server:
-  applicationConnectors:
-    - type: http
-      port: ${DCS_PORT:-11000}
-
 logging:
   level: ${DCS_LOG_LEVEL:-INFO}
   loggers:
     "uk.gov": DEBUG
   appenders:
     - type: console
+
+dcsUrl: ${DCS_URL}
 
 clientPrivateSigningKey: ${CLIENT_SIGNING_KEY}
 clientSigningCertificate: ${CLIENT_SIGNING_CERT}

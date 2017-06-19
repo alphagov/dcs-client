@@ -72,14 +72,6 @@ shadowJar {
     }
 }
 
-task copyConfigTemplate(type: Copy) {
-    from 'build/resources/main/dcs-client.yml'
-    into 'build/tmp'
-    rename { String fileName ->
-        'dcs-client-config-template.yml'
-    }
-}
-
 github {
     owner = 'alphagov'
     repo = 'dcs-client'
@@ -90,14 +82,12 @@ github {
     body = new File('RELEASE_NOTES.md').text
     assets = [
             "build/distributions/dcs-client-${version}.zip",
-            'README.md',
-            'build/tmp/dcs-client-config-template.yml'
+            'USAGE_README.md'
     ]
 }
 
 githubRelease.dependsOn test
 githubRelease.dependsOn distZip
-githubRelease.dependsOn copyConfigTemplate
 
 task release(dependsOn: 'githubRelease') {
     doLast{
