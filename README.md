@@ -28,7 +28,7 @@ https://github.com/alphagov/dcs-client/releases/latest
 	* `KEY_STORE_PASSWORD`: password to the key store
 	* `TRUST_STORE_PATH`: filepath to the trust store
 	* `TRUST_STORE_PASSWORD`: password to the trust store
-	* `DCS_URL`: The URL for DCS - currently 
+	* `DCS_URL`: The URL for DCS
 	* `SSL_REQUEST_HEADER`: Distinguished name for SSL handshake
 	* `DCS_PORT`: port number for the client (defaults to 11000 if not specified)
 	* `DCS_LOG_LEVEL`: application log level (defaults to INFO if not specified)
