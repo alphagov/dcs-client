@@ -82,7 +82,7 @@ github {
     body = new File('RELEASE_NOTES.md').text
     assets = [
             "build/distributions/dcs-client-${version}.zip",
-            'USAGE_README.md'
+            'README.md'
     ]
 }
 

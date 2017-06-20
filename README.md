@@ -16,47 +16,87 @@ It sends the JOSE to DCS, unsigns, decrypts, and again unsigns the response and 
 
 https://github.com/alphagov/dcs-client/releases/latest
 
-## Using the client
+## Client usage
 
-In development mode, you can run the client either with `gradle` or by producing an executable JAR.
+Unzip the distribution zip file and run the client.
 
-This section explains how to setup the client and make a request.
+You can run configure the client either by providing a configuration file or by setting environment variables. The sections below explain how to configure and run the client with these different configuration styles.
 
-### Prerequisites
+### Configuration file
 
-1. Have a running instance of DCS. You can start up one locally or use an existing DCS environment.
-1. Unless you specify a configuration file as a commandline argument when running the client, you will need to configure the following environment variables:
+Here's an example of a configuration file:
 
-	* `CLIENT_SIGNING_KEY`: filepath to private key used for signing
-	* `CLIENT_SIGNING_CERT`: filepath to public cert used for signing
-	* `CLIENT_ENCRYPTION_KEY`: filepath to private key used for encryption
-	* `DCS_ENCRYPTION_CERT`: filepath to DCS's public cert for encryption
-	* `KEY_STORE_PATH`: filepath to key store
-	* `KEY_STORE_PASSWORD`: password to the key store
-	* `TRUST_STORE_PATH`: filepath to the trust store
-	* `TRUST_STORE_PASSWORD`: password to the trust store
-	* `DCS_URL`: The url that you want to send the request to
-	* `SSL_REQUEST_HEADER`: Distinguished name for SSL handshake
-	* `DCS_PORT`: port number for the client (defaults to 11000 if not specified)
-	* `DCS_LOG_LEVEL`: application log level (defaults to INFO if not specified)
+    server:
+      applicationConnectors:
+        - type: http
+          port: ${DCS_PORT:-11000}
+    
+    httpClient:
+      timeout: 15s
+      connectionTimeout: 15s
+      cookiesEnabled: false
+      connectionTimeout: 15s
+      tls:
+        keyStorePath: ${KEY_STORE_PATH}
+        keyStorePassword: ${KEY_STORE_PASSWORD}
+        trustStorePath: ${TRUST_STORE_PATH}
+        trustStorePassword: ${TRUST_STORE_PASSWORD}
+        verifyHostname: false
+    
+    logging:
+      level: ${DCS_LOG_LEVEL:-INFO}
+      loggers:
+        "uk.gov": DEBUG
+      appenders:
+        - type: console
+    
+    dcsUrl: ${DCS_URL}
+    
+    clientPrivateSigningKey: ${CLIENT_SIGNING_KEY}
+    clientSigningCertificate: ${CLIENT_SIGNING_CERT}
+    clientPrivateEncryptionKey: ${CLIENT_ENCRYPTION_KEY}
+    
+    dcsEncryptionCertificate: ${DCS_ENCRYPTION_CERT}
 
-1. See 'running from the JAR' or 'running with gradle' section below, as appropriate.
+In the example above, some of the values are set to just use the environment variables described in the next section - these have the format ${VARIABLE_NAME}.  If you prefer to specify these values directly in the file, just replace these variables with the values you want to use.
 
-### Running with gradle
+The configuration file includes configuration for DropWizard, a Java web framework. The `server`, `httpClient` and `logging` sections of the configuration file relate to DropWizard-specific settings. For further details on how to configure them, see http://www.dropwizard.io/1.1.0/docs/manual/configuration.html.
 
-Run the client with `./startup.sh`
 
-### Creating and running executable JAR
+To run the client with a configuration file in Linux:
+    
+    ./dcs-client/bin/dcs-client server <config-file>
+    
+To run the client with a configuration file in Windows:
+    
+    dcs-client\bin\dcs-client.bat server <config-file>
 
-Creating:
+### Environment variables
 
-    ./gradlew clean build shadowJar
+If you do not specify a configuration file, you must set the following environment variables:
 
-Running:
+* `CLIENT_SIGNING_KEY`: filepath to private key used for signing
+* `CLIENT_SIGNING_CERT`: filepath to public cert used for signing
+* `CLIENT_ENCRYPTION_KEY`: filepath to private key used for encryption
+* `DCS_ENCRYPTION_CERT`: filepath to DCS's public cert for encryption
+* `KEY_STORE_PATH`: filepath to key store
+* `KEY_STORE_PASSWORD`: password to the key store
+* `TRUST_STORE_PATH`: filepath to the trust store
+* `TRUST_STORE_PASSWORD`: password to the trust store
+* `DCS_URL`: The URL for DCS
+* `SSL_REQUEST_HEADER`: Distinguished name for SSL handshake
+* `DCS_PORT`: port number for the client (defaults to 11000 if not specified)
+* `DCS_LOG_LEVEL`: application log level (defaults to INFO if not specified)
 
-    java -jar dcs-client.jar server configuration/dcs-client.yml
 
-Note that the 'server' argument, which allows you to specify a configuration file, is optional.  If you do not provide it, then values will be used from the environment variables instead.
+To run the client in Linux:
+    
+    ./dcs-client/bin/dcs-client
+    
+To run the client in Windows:
+    
+    dcs-client\bin\dcs-client.bat
+
 
 ### Sending a request to the client
 
@@ -65,21 +105,6 @@ Note that the 'server' argument, which allows you to specify a configuration fil
 The `client-request-data.json` should contain the appropriate request for the check you want to test (i.e. either a licence or a passport check).
 See https://github.com/alphagov/dcs-client/blob/master/src/test/resources/request.json as an example.
 
-## Running the tests
+## Development and contributing
 
-    ./pre-commit.sh
-
-## Creating a new release
-
-Note that gradle will automatically run the pre-commit tests and create a deployable JAR when you follow the process below; you do not need to do these things separately.
-
-1. Edit gradle.properties file and check that the version number information is correct.
-1. Run the following command: `./gradlew -PgithubApiToken=yourApiToken release`, where yourApiToken is your own GitHub API token.
-
-If you don't have a GitHub API token, you will need to create one:
-
-1. Go to your GitHub personal settings.
-1. Look at the Developer Settings box at the bottom left of the page.  Click 'Personal Access Tokens'.
-1. Choose 'Generate new token'.
-1. Provide a name of your choice for the token in the description field.  Make sure the 'repo' scopes are selected.
-1. Click 'Generate token' to complete the process, and now copy the token and copy the token from the green box.  Record it somewhere safe, as GitHub will nto show it to you again (but if you lose it, you can just delete the token and generate a new one).
+See https://github.com/alphagov/dcs-client/blob/master/CONTRIBUTING.md for more information.
