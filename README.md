@@ -4,7 +4,7 @@
 
 ## Purpose
 
-A client for the Document Checking Service. Agents such as DVLA and DVA should be able to use it to imitate requests sent by IDPs to DCS to test the agents' own services. 
+A testing client for the Document Checking Service. Agents such as DVLA and DVA should be able to use it to imitate requests sent by IDPs to DCS to test the agents' own services, for performing end-to-end testing.
 
 ## What it does
 
