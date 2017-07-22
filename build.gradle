@@ -50,8 +50,6 @@ compileTestJava {
     options.compilerArgs << "-XDignore.symbol.file"
 }
 
-// ----- CREATE FATJAR ---- //
-
 buildscript {
     repositories { jcenter() }
     dependencies {
@@ -97,14 +95,6 @@ task release(dependsOn: 'githubRelease') {
         ant.replace(file: "gradle.properties", token: "minorVersion=${minorVersion}", value: "minorVersion=${nextMinorVersionString}")
     }
 }
-
-mainClassName = "uk.gov.ida.dcsclient.DcsClientApplication "
-
-run {
-    args = ["server", "configuration/dcs-client.yml"]
-}
-
-mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
 
 task buildDeb(type: Deb, overwrite: true, dependsOn: 'shadowJar') {
     packageName = 'dcs-client'
@@ -157,4 +147,3 @@ task buildContainer(type: Docker, dependsOn: 'shadowJar') {
     exposePort(11001)
     tagVersion('latest')
 }
-// --------- //
