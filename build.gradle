@@ -50,8 +50,6 @@ compileTestJava {
     options.compilerArgs << "-XDignore.symbol.file"
 }
 
-// ----- CREATE FATJAR ---- //
-
 buildscript {
     repositories { jcenter() }
     dependencies {
@@ -98,46 +96,6 @@ task release(dependsOn: 'githubRelease') {
     }
 }
 
-mainClassName = "uk.gov.ida.dcsclient.DcsClientApplication "
-
-run {
-    args = ["server", "configuration/dcs-client.yml"]
-}
-
-mainClassName = 'uk.gov.ida.dcsclient.DcsClientApplication'
-
-task buildDeb(type: Deb, overwrite: true, dependsOn: 'shadowJar') {
-    packageName = 'dcs-client'
-    release = System.getenv('BUILD_NUMBER') ?: '0'
-
-    requires('java8-runtime-headless')
-
-    postInstall file('ospackage/debian/dcs-client.postinst')
-    postUninstall file('ospackage/debian/dcs-client.postrm')
-
-    from(shadowJar.outputs.files) {
-        into '/usr/share/java'
-        rename { "dcs-client-${version}.jar" }
-    }
-    link('/usr/share/java/dcs-client.jar', "/usr/share/java/dcs-client-${version}.jar")
-
-    from('ospackage/debian/upstart.conf') {
-        into '/etc/init'
-        rename { 'dcs-client.conf' }
-    }
-
-    from('ospackage/debian/dcs-client.default') {
-        into '/etc/default'
-        rename { 'dcs-client' }
-    }
-    configurationFile('/etc/default/dcs-client')
-
-    from('configuration/dcs-client.yml') {
-        into '/etc/dcs'
-    }
-    configurationFile('/etc/dcs/dcs-client.yml')
-}
-
 docker {
     baseImage("openjdk:8-jre-alpine")
     maintainer("verify-tech@digital.cabinet-office.gov.uk")
@@ -157,4 +115,3 @@ task buildContainer(type: Docker, dependsOn: 'shadowJar') {
     exposePort(11001)
     tagVersion('latest')
 }
-// --------- //
