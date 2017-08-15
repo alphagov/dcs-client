@@ -1,10 +1,10 @@
 {
   "correlationId": "322a848a-57a5-44c4-b492-0536e7309cd5",
   "requestId": "322a848a-57a5-44c4-b492-0536e7309cd5",
-  "timestamp": "2017-06-13T10:46:37.555Z",
+  "timestamp": "2017-08-02T16:46:37.555Z",
   "clientId": "dcs-client-Id",
-  "surname": "SMITH",
-  "forenames": ["JOHN"],
+  "surname": "JOHN",
+  "forenames": ["SMITH"],
   "dateOfBirth": "1970-01-01",
   "issueDate": "2012-01-01",
   "expiryDate": "2022-01-01",
