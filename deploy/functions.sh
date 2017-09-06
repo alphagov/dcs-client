@@ -1,17 +1,15 @@
-function service_pid {
+function get_service_pid {
   local service=$1
-  pids=`ps aux | grep java | grep ${service}.yml | awk '{print $2}'`
+  pid=`ps aux | grep java | grep ${service}.yml | awk '{print $2}'`
 }
 
 function teardown_service {
   service=$1
-  service_pid $service
-  for pid in $pids; do
-    if [[ -n $pid ]]; then
-      echo "Killing process ${pid}: ${service}"
-      kill -9 $pid 2> /dev/null
-    fi
-  done
+  get_service_pid $service
+  if [[ -n $pid ]]; then
+    echo "Killing process ${pid}: ${service}"
+    kill -9 $pid 2> /dev/null
+  fi
 }
 
 function teardown_apps {
