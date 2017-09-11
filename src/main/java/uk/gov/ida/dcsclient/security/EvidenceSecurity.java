@@ -17,7 +17,7 @@ public class EvidenceSecurity {
     }
 
     public String secure(String payload) throws JOSEException, CertificateEncodingException {
-        LOG.info("Securing request payload: ", payload);
+        LOG.info("Securing request payload: {}", payload);
         String signed = signer.sign(payload);
         String encrypted = encrypter.encrypt(signed);
         return signer.sign(encrypted);

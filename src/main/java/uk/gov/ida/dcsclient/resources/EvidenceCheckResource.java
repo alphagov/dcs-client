@@ -42,6 +42,7 @@ public class EvidenceCheckResource {
             String securedPayload = evidenceSecurity.secure(evidencePayload);
             Response response = dcsService.call(securedPayload);
 
+
             String body = getBodyFrom(response);
             String error = getErrorFrom(response);
 
@@ -63,7 +64,7 @@ public class EvidenceCheckResource {
 
     private String getBodyFrom(Response response) throws ParseException, JOSEException {
         String responseBody = response.readEntity(String.class);
-        LOG.info("Received response from DCS: ", responseBody);
+        LOG.info("Received response from DCS: {}", responseBody);
         return responseBody.isEmpty()
                 ? responseBody
                 : securePayloadExtractor.getPayloadFor(responseBody);
