@@ -97,6 +97,7 @@ To run the client in Windows:
     
     dcs-client\bin\dcs-client.bat
 
+Note that startup.sh will set the environment variables values for dcs-client to run locally.
 
 ### Sending a request to the client
 
