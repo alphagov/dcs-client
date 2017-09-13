@@ -1,14 +1,14 @@
 {
   "correlationId": "322a848a-57a5-44c4-b492-0536e7309cd5",
   "requestId": "322a848a-57a5-44c4-b492-0536e7309cd5",
-  "timestamp": "2017-09-07T17:06:37.555Z",
+  "timestamp": "2017-09-13T11:31:37.555Z",
   "clientId": "dcs-client-Id",
   "surname": "PARKER",
   "forenames": ["PETER", "BENJAMIN"],
   "dateOfBirth": "1962-10-11",
-  "issueDate": "1982-05-23",
+  "dateOfIssue": "1982-05-23",
   "expiryDate": "2062-12-09",
-  "licenceNumber": "44332211",
+  "driverNumber": "44332211",
   "postcode": "BS98 1TL",
-  "issuingAuthority": "GBR"
+  "issuingAuthority": "DVA"
 }
