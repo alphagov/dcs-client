@@ -23,7 +23,8 @@ export DCS_ENCRYPTION_CERT=../doc-checking/deploy/keys/encryption_dcs.crt
 
 echo -n "Starting $service_name..."
 
-./gradlew run > logs/dcs-client_console.log 2>&1 &
+./gradlew shadowJar
+java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=11000 -jar build/libs/dcs-client-0.1.0-pre-all.jar  server configuration/dcs-client.yml> logs/dcs-client_console.log 2>&1 &
 
 get_service_pid $service_name
 
